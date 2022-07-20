@@ -6,20 +6,20 @@ This repo exists to host code that is being moved from IDL to Python.
 Python is required, I suggest using a Conda installation.
 
 ## Linux
-C and fortran compilers are needed (e.x. ``gcc`` and ``gfortran``)
-Conda packages needed are ``numpy``, ``scipy``, ``matplotlib``, and ``h5py``
-An ncurses library should be installed
-The CDF library can be obtained from https://spdf.gsfc.nasa.gov/pub/software/cdf/dist/cdf38_1/linux/ or https://spdf.gsfc.nasa.gov/pub/software/cdf/dist/cdf37_1/linux/. After installing, note the path of the ``lib/`` directory.
-See https://spacepy.github.io/install_linux.html for more installation guidance, as you may have to compile the CDF library yourself.
+- C and fortran compilers are needed (e.x. ``gcc`` and ``gfortran``)
+- Conda packages needed are ``numpy``, ``scipy``, ``matplotlib``, and ``h5py``
+- An ncurses library should be installed
+- The CDF library can be obtained from https://spdf.gsfc.nasa.gov/pub/software/cdf/dist/cdf38_1/linux/ or https://spdf.gsfc.nasa.gov/pub/software/cdf/dist/cdf37_1/linux/. After installing, note the path of the ``lib/`` directory.
+- See https://spacepy.github.io/install_linux.html for more installation guidance, as you may have to compile the CDF library yourself.
 
 ## Mac
-A C compiler is needed (run ``xcode-select --install``)
-conda packages needed are ``gfortran_osx-64``, ``numpy``, ``scipy``, ``matplotlib``, ``h5py``
-The CDF library can be obtained from https://spdf.gsfc.nasa.gov/pub/software/cdf/dist/cdf38_1/macosx/ or https://spdf.gsfc.nasa.gov/pub/software/cdf/dist/cdf37_1/macosx/. After installing, note the path of the ``lib/`` directory (you may have to view the contents of the app in your ``Applications`` folder).
+- A C compiler is needed (run ``xcode-select --install``)
+- conda packages needed are ``gfortran_osx-64``, ``numpy``, ``scipy``, ``matplotlib``, ``h5py``
+- The CDF library can be obtained from https://spdf.gsfc.nasa.gov/pub/software/cdf/dist/cdf38_1/macosx/ or https://spdf.gsfc.nasa.gov/pub/software/cdf/dist/cdf37_1/macosx/. After installing, note the path of the ``lib/`` directory (you may have to view the contents of the app in your ``Applications`` folder).
 
 ## Windows
-Conda packages needed are ``m2w64-gcc-fortran``, ``libpython``, ``numpy``, ``scipy``, ``matplotlib``, ``h5py``
-The CDF library can be obtained from https://spdf.gsfc.nasa.gov/pub/software/cdf/dist/cdf38_1/windows/ or https://spdf.gsfc.nasa.gov/pub/software/cdf/dist/cdf37_1/windows/. After installing, note the path of the ``lib`` directory.
+- Conda packages needed are ``m2w64-gcc-fortran``, ``libpython``, ``numpy``, ``scipy``, ``matplotlib``, ``h5py``
+- The CDF library can be obtained from https://spdf.gsfc.nasa.gov/pub/software/cdf/dist/cdf38_1/windows/ or https://spdf.gsfc.nasa.gov/pub/software/cdf/dist/cdf37_1/windows/. After installing, note the path of the ``lib`` directory.
 
 # Setting up Conda and the Programming .env
 1) In your conda environment, install the packages for your system listed above. After that, run ``pip install spacepy pyspedas python-dotenv tqdm``
