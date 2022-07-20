@@ -1,5 +1,5 @@
 # Description
-This repo exists to host code that is being moved from IDL to Python.
+This repo exists to host code that is being moved from IDL to Python. For the most part, I try to follow flake8 formatting standards.
 
 
 # Requirements
@@ -22,7 +22,7 @@ Python is required, I suggest using a Conda installation.
 - The CDF library can be obtained from https://spdf.gsfc.nasa.gov/pub/software/cdf/dist/cdf38_1/windows/ or https://spdf.gsfc.nasa.gov/pub/software/cdf/dist/cdf37_1/windows/. After installing, note the path of the ``lib/`` directory.
 
 # Setting up Conda and the Programming .env
-1) In your conda environment, install the packages for your system listed above. After that, run ``pip install spacepy pyspedas python-dotenv tqdm``
+1) In your conda environment, install the packages for your system listed above. After that, run ``pip install spacepy pyspedas python-dotenv tqdm``. The Conda site suggest adding ``--upgrade-strategy only-if-needed`` to pip install commands, I'm not sure how essential that is.
 2) After that installs, create a file called ``.env`` in the same directory as the files from this repo.
 3) In the ``.env``file, add a line that is your OS type in all caps (e.g. MAC, WINDOWS, or LINUX), followed by ``_CDF_LIB = `` then the path to the ``lib/`` directory you noted earlier.
 4) In the ``.env`` file,  add a line that is your OS type in all caps (e.g. MAC, WINDOWS, or LINUX), followed by ``_HOME_DIR = `` then the path to the folder of the files from this repo.
