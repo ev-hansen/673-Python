@@ -68,6 +68,8 @@ from pyspedas.rbsp import hope
 # Calculations and array/list ops
 import numpy
 
+from tqdm import tqdm
+
 
 # Find OS-specific CDF_LIB path in .env file. Make sure you
 # set whichever is patform-relevant to you
@@ -79,7 +81,7 @@ elif (platform.system() == "Linux"):
     HOME_DIR = os.environ["LINUX_HOME_DIR"]
     CDF_LIB = os.environ["LINUX_CDF_LIB"]
     os.environ["CDF_LIB"] = CDF_LIB
-elif (platform.system() == "Mac"):
+elif (platform.system() == "Darwin"):
     HOME_DIR = os.environ["MAC_HOME_DIR"]
     CDF_LIB = os.environ["MAC_CDF_LIB"]
     os.environ["CDF_LIB"] = CDF_LIB
@@ -286,7 +288,7 @@ class HopeCalculations:
                     ele_data_array (numpy.array): An array w/ epoch, 
                         electron data, mode, and fedu values from the given CDF 
                         file.
-                    
+
         """
 
         start_time = self.__time_s_datetime
@@ -346,7 +348,7 @@ class HopeCalculations:
                  else float("NaN")
                  for k in fodu_data[i][j]] for j in range(len(
                      fodu_data[i]))])
-             } for i in range(len(t_ion)) 
+             } for i in tqdm(range(len(t_ion)), desc="ion") 
             if (start_time < t_ion[i] < end_time)])
 
         ele_data_array = numpy.array([
@@ -358,7 +360,7 @@ class HopeCalculations:
                  else float("NaN")
                  for k in fedu_data[i][j]] for j in range(len(
                      fedu_data[i]))])
-             } for i in range(len(t_ele))
+             } for i in tqdm(range(len(t_ele)), desc="ele")
             if (start_time < t_ele[i] <= end_time)])     
 
         cdf_data = {"ion_data_dict": ion_data_array, 
@@ -370,7 +372,7 @@ class HopeCalculations:
     def pressure_calculations(self, 
                               cdf_data: Dict[dt.datetime, 
                                              Dict[str, Any]]):
-        
+
         print()
 
     def transpose(self, given_list: List[Any]) -> numpy.array:
@@ -404,7 +406,7 @@ class HopeCalculations:
         cdf_objs = self.get_cdf_objs(datetime_list)
         cdf_objs_data = numpy.array([])
 
-        for i in range(len(cdf_objs)):
+        for i in tqdm(range(len(cdf_objs)), desc="getting data"):
             cdf_obj = cdf_objs[i]
             now = dt.datetime.now()
             current_time = now.strftime("%H:%M:%S")
