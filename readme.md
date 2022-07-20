@@ -19,7 +19,7 @@ Python is required, I suggest using a Conda installation.
 
 ## Windows
 - Conda packages needed are ``m2w64-gcc-fortran``, ``libpython``, ``numpy``, ``scipy``, ``matplotlib``, ``h5py``
-- The CDF library can be obtained from https://spdf.gsfc.nasa.gov/pub/software/cdf/dist/cdf38_1/windows/ or https://spdf.gsfc.nasa.gov/pub/software/cdf/dist/cdf37_1/windows/. After installing, note the path of the ``lib`` directory.
+- The CDF library can be obtained from https://spdf.gsfc.nasa.gov/pub/software/cdf/dist/cdf38_1/windows/ or https://spdf.gsfc.nasa.gov/pub/software/cdf/dist/cdf37_1/windows/. After installing, note the path of the ``lib/`` directory.
 
 # Setting up Conda and the Programming .env
 1) In your conda environment, install the packages for your system listed above. After that, run ``pip install spacepy pyspedas python-dotenv tqdm``
