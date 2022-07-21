@@ -31,6 +31,7 @@ Python is required via a conda installation. My current conda environment uses 3
 5) You can now run the Python code from this repo. Email ev.hansen@umbc.edu for assistance.
 
 # TODO (``calc_hope_pressure.py``)
+- Replace spacepy with cdflib
 - Correct fluxes
 - Calculate Pressure
 - Smooth data

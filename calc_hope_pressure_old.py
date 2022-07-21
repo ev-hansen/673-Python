@@ -38,6 +38,7 @@ __version__ = "0.0.1"
 
 
 ############################################################
+# TODO: - Replace spacepy code with cdflib
 # TODO: - Correct fluxes
 # TODO: - Calculate Pressure
 # TODO: - Smooth data
