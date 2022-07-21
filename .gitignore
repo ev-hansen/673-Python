@@ -1,0 +1,8 @@
+# dotenv
+.env
+
+# misc dirs
+rbsp_data/
+pysatCDF/
+test*code/
+.vscode/
