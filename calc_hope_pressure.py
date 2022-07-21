@@ -14,12 +14,6 @@ This code was written to work in a conda environment, it is suggested to set
 one up. It is suggested to add “--upgrade-strategy only-if-needed” when using 
 pip to install packages in your conda environment.
 
-This code requires cdflib to be installed, see 
-https://spacepy.github.io/pycdf.html#module-spacepy.pycdf. 
-Evan suggests using 3.7.1, as 3.8.1 seems to have issues importing in python.
-Make a '.env' file in the same directory as this file and specify the CDF_LIB
-location.  See above link for what to set CDF_LIB to in your .env file. 
-
 """
 
 __authors__ = ["Evan Hansen", "Cristian Ferradas"]
@@ -38,6 +32,7 @@ __version__ = "0.0.1"
 
 
 ############################################################
+# TODO: - Replace spacepy code with cdflib
 # TODO: - Correct fluxes
 # TODO: - Calculate Pressure
 # TODO: - Smooth data
@@ -62,7 +57,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # CDF Operations
-from spacepy import pycdf
+import cdflib
+import xarray as xr
+from xarray.core.dataset import Dataset as XarrDataset
 from pyspedas.rbsp import hope
 
 # Calculations and array/list ops
@@ -75,16 +72,10 @@ from tqdm import tqdm
 # set whichever is patform-relevant to you
 if (platform.system() == "Windows"):
     HOME_DIR = os.environ["WIN_HOME_DIR"]
-    CDF_LIB = os.environ["WIN_CDF_LIB"]
-    os.environ["CDF_LIB"] = CDF_LIB
 elif (platform.system() == "Linux"):
     HOME_DIR = os.environ["LINUX_HOME_DIR"]
-    CDF_LIB = os.environ["LINUX_CDF_LIB"]
-    os.environ["CDF_LIB"] = CDF_LIB
 elif (platform.system() == "Darwin"):
     HOME_DIR = os.environ["MAC_HOME_DIR"]
-    CDF_LIB = os.environ["MAC_CDF_LIB"]
-    os.environ["CDF_LIB"] = CDF_LIB
 
 
 # Main File #
@@ -187,7 +178,7 @@ class HopeCalculations:
 
     def get_cdf_objs(self, 
                      given_datetime_list: 
-                         list[dt.datetime]) -> List[pycdf.CDF]:
+                         list[dt.datetime]) -> List[XarrDataset]:
         """
         Gets a lsit of CDF objects for the given time range.
             Parameters:
@@ -197,7 +188,7 @@ class HopeCalculations:
                 cdf_obj_list c(list): cdf file objects in a list
         """
         cdf_obj_list = []
-        for date_obj_i in tqdm(given_datetime_list, desc="dates"):
+        for date_obj_i in given_datetime_list:
             now = dt.datetime.now()
             current_time = now.strftime("%H:%M:%S")
             print(f"{current_time} getting file for {date_obj_i}")
@@ -205,7 +196,7 @@ class HopeCalculations:
             cdf_obj_list.append(cdf_obj_i)
         return cdf_obj_list
 
-    def get_cdf(self, given_datetime_obj: dt.datetime) -> pycdf.CDF:
+    def get_cdf(self, given_datetime_obj: dt.datetime) -> XarrDataset:
         """
         Gets cdf file object, either from disk or the internet.
 
@@ -271,23 +262,11 @@ class HopeCalculations:
             str_match = list(filter(lambda x: fln_tmp in x, file_list))
             cdf_file_path = f"{cdf_file_dir}/{str_match[0]}"
 
-        cdfObject = pycdf.CDF(cdf_file_path)
-        return cdfObject
+        dataset = cdflib.cdf_to_xarray(cdf_file_path, to_unixtime=True, 
+                                       fillval_to_nan=True)
+        return dataset
 
-    def filter_species_data(self, mode, given_data):
-        fill_value = 0
-        apogee_mode = 0
-
-        filtered = [[
-            k if ((k >= fill_value) and (mode == apogee_mode))
-            else float("NaN")
-            for k in range(len(given_data[j]))]
-            for j in range(len(
-                given_data))]
-
-        return filtered
-
-    def read_cdf_data(self, given_cdf_object: pycdf.CDF) -> Dict[str, Any]:
+    def read_cdf_data(self, given_xr_dataset: cdflib.CDF) -> Dict[str, Any]:
         """Gather data from the given CDF object
 
             Args:
@@ -296,24 +275,24 @@ class HopeCalculations:
             Returns:
                 cdf_data (dict): A dict w/ CDF data
                     ion_data_array (numpy.arry): An array w/ epoch, ion data, 
-                    mode, fpdu, fhedu, and fodu values from the given CDF file
-                    ele_data_array (numpy.ndarray): An array w/ epoch, 
+                        mode, fpdu, fhedu, and fodu values from the given CDF
+                        file
+                    ele_data_array (numpy.array): An array w/ epoch, 
                         electron data, mode, and fedu values from the given CDF 
                         file.
+
         """
 
         start_time = self.__time_s_datetime
         end_time = self.__time_e_datetime
-        up_energy = self.__up_energy
-        low_energy = self.__low_energy
 
         # Datetime objs represening timestamps
-        t_ion = self.reform(given_cdf_object["Epoch_Ion"])  # Ion
-        t_ele = self.reform(given_cdf_object["Epoch_Ele"])  # Electron
+        t_ion = given_xr_dataset['Epoch_Ion'].squeeze()  # Ion
+        t_ele = given_xr_dataset['Epoch_Ele'].squeeze()  # Electron
 
         # 
-        e_data_ion = given_cdf_object["HOPE_ENERGY_Ion"] 
-        e_data_ele = given_cdf_object["HOPE_ENERGY_Ele"]
+        e_data_ion = given_xr_dataset['HOPE_ENERGY_Ion']
+        e_data_ele = given_xr_dataset['HOPE_ENERGY_Ele']
 
         # Mode of data collection
         # 0 is Apogee Mode, 1 is Perigee Mode, 2 is Burst Mode
@@ -321,17 +300,18 @@ class HopeCalculations:
         # (1) Perigee mode: minimum energy channel
         # (2) burst mode: subset of energies sampled at rapid cadence.
         # burst mode is only used for electron operations.
-        mode_ion = self.reform(given_cdf_object["Mode_Ion"])
-        mode_ele = self.reform(given_cdf_object["Mode_Ele"])
+        mode_ion = given_xr_dataset['Mode_Ion']
+        mode_ele = given_xr_dataset['Mode_Ele']
 
         # Data of the "species," function of pitchangle"
-        fpdu_data = given_cdf_object["FPDU"]  # proton flux
-        fhedu_data = given_cdf_object["FHEDU"]  # hydrogen flux
-        fodu_data = given_cdf_object["FODU"]  # oxygen flux
-        fedu_data = given_cdf_object["FEDU"]  # electron fluxe
+        fpdu_data = given_xr_dataset['FPDU']  # proton flux
+        fhedu_data = given_xr_dataset['FHEDU']  # hydrogen flux
+        fodu_data = given_xr_dataset['FODU']  # oxygen flux
+        fedu_data = given_xr_dataset['FEDU']  # electron flux
 
-        pitchangle_data = given_cdf_object["PITCH_ANGLE"]
-        # given_cdf_object.close()
+        pitchangle_data = given_xr_dataset['PITCH_ANGLE']
+
+        apogee_mode = 0
 
         # read ion related data, replace fill values in species data w/ NaN
         # data from Parigee and Burst are also replaced w/ NaNs
@@ -339,82 +319,77 @@ class HopeCalculations:
         # data type: numpy.array[numpy.array[float]]
         # mode type: numpy.array[int]
         # fpdu, fhedu, fodu type: numpy.array[numpy.array[float]]
-        ion_data_array = [
-            {
-                "epoch": t_ion[i],
-                "data": list(e_data_ion[i]),
-                "data_outside_energy_range": [
-                    j for j in range(len(e_data_ion[i])) 
-                    if not (low_energy[0] < e_data_ion[i][j] < up_energy[0])],
-                "mode": mode_ion[i],
-                "fpdu": self.filter_species_data(mode_ion[i], fpdu_data[i]),
-                "fhedu": self.filter_species_data(mode_ion[i], fhedu_data[i]),
-                "fodu": self.filter_species_data(mode_ion[i], fodu_data)
-            } for i in tqdm(range(len(t_ion)), desc="ion data")
-            if (start_time <= t_ion[i] <= end_time)]
+        ion_data_list = [
+            {'epoch': dt.fromtimestamp(float(t_ion[i].values)),
+             'energy': e_data_ion[i],
+             'fpdu': fpdu_data[i],
+             'fhedu': fhedu_data[i],
+             'fodu': fodu_data[i]
+             } for i in tqdm(range(t_ion.size), desc="ion") if (
+                (start_time <= dt.fromtimestamp(float(
+                    t_ion[i].values)) <= end_time) and (
+                        mode_ion[i].values == apogee_mode))
+        ]
 
-        ele_data_array = [
-            {
-                "epoch": t_ele[i],
-                "data": list(e_data_ele[i]),
-                "data_outside_energy_range": [
-                    e_data_ele[i][j] for j in range(len(e_data_ele[i])) 
-                    if not (low_energy[1] < e_data_ele[i][j] < up_energy[1])],
-                "mode": mode_ele[i],
-                "fedu": self.filter_species_data(mode_ele[i], fedu_data[i])
-            } for i in tqdm(range(len(t_ele)), desc="ele data")
-            if (start_time <= t_ele[i] <= end_time)]
+        ele_data_list = [
+            {'epoch': dt.fromtimestamp(float(t_ele[i].values)),
+             'energy': e_data_ele[i],
+             'fedu': fedu_data[i]
+             } for i in tqdm(range(t_ele.size), desc="ele") if (
+                (start_time <= dt.fromtimestamp(float(
+                    t_ele[i].values)) <= end_time) and (
+                        mode_ele[i].values == apogee_mode))
+        ]   
 
-        cdf_data = {"ion_data_dict": ion_data_array, 
-                    "ele_data_dict": ele_data_array,
+        cdf_data = {"ion_data_dict": ion_data_list, 
+                    "ele_data_dict": ele_data_list,
                     "pitchangle_data": pitchangle_data}
 
         return cdf_data
 
     def pressure_calculations(self, 
-                              cdf_data: numpy.ndarray):
-        print("Performing calculations")
+                              cdf_data: Dict[dt.datetime, 
+                                             Dict[str, Any]]):
 
-    def transpose(self, given_list: List[Any]) -> numpy.ndarray:
+        print()
+
+    def transpose(self, given_list: List[Any]) -> numpy.array:
         """Transposes a list (swaps rows/columns)
 
             Parameters:
                 given_list (list): A 2D list
 
             Returns:
-                transposed (numpy.ndarray): given_list transposed as an arr
+                transposed_list (arr): given_list transposed as an arr
         """
         arr = numpy.array(given_list)
         transposed = arr.T
         return transposed
 
-    def reform(self, given_list: List[Any]) -> numpy.ndarray:
+    def reform(self, given_list: List[Any]) -> numpy.array:
         """Acts similar to how the IDL reform function works in the original code
 
             Parameters:
                 given_list (list): A list, potentially w/ a dimension of size 1
 
             Returns:
-                reformed (numpy.ndarray): Numpy arr w/o dimension size 1
+                reformed (arr): Numpy arr of list w/o dimension of size 1
         """
         arr = numpy.array(given_list)
-        reformed = arr.squeeze()
-        return reformed
+        reformed = arr.squeeze()        return reformed
 
     def wrapper(self):
         datetime_list = self.datetime_range_list()
         cdf_objs = self.get_cdf_objs(datetime_list)
-        cdf_objs_data = numpy.array([])
+        cdf_objs_data = []
 
-        for i in tqdm(range(len(cdf_objs)), desc="Getting data"):
+        for i in tqdm(range(len(cdf_objs)), desc="getting data"):
             cdf_obj = cdf_objs[i]
             now = dt.datetime.now()
             current_time = now.strftime("%H:%M:%S")
             print(f"{current_time} gathering information from " 
                   f"{datetime_list[i]}")
-            this_cdf_data = self.read_cdf_data(cdf_obj)
-            cdf_obj.close()
-            cdf_objs_data = numpy.append(cdf_objs_data, this_cdf_data)
+            cdf_objs_data.append(cdf_obj)
 
         self.pressure_calculations(cdf_objs_data)
 
@@ -558,8 +533,8 @@ def main():
     swindow = args_dict['swindow']
 
     main_calculations = HopeCalculations(time_s_str, time_e_str, probe, level, 
-                                         factor, low_energy, up_energy, 
-                                         pot_corr, relat, swindow)
+                                         relat, factor, low_energy, up_energy, 
+                                         pot_corr, swindow)
 
     main_calculations.wrapper()
 
