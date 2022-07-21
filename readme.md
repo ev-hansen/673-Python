@@ -30,7 +30,7 @@ Python is required via a conda installation. My current conda environment uses 3
 4) In the ``.env`` file,  add a line that is your OS type in all caps (e.g. MAC, WINDOWS, or LINUX), followed by ``_HOME_DIR = `` then the path to the folder of the files from this repo.
 5) You can now run the Python code from this repo. Email ev.hansen@umbc.edu for assistance.
 
-# TODO (calc_hope_pressure.py)
+# TODO (``calc_hope_pressure.py``)
 - Correct fluxes
 - Calculate Pressure
 - Smooth data
