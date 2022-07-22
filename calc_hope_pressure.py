@@ -350,8 +350,11 @@ class HopeCalculations:
 
         return cdf_data
 
-    def pressure_calculations(self, 
-                              cdf_data: List[Dict[str, Any]]):
+    def correct_fluxes(self, given_cdf_data: List[Dict[str, Any]]):
+        print()
+
+    def calc_pressure(self, cdf_data: List[Dict[str, 
+                                                Any]]) -> List[Dict[str, Any]]:
         """Perform the calculations
 
         Args:
@@ -360,6 +363,18 @@ class HopeCalculations:
                                             days
         """
 
+        print()
+
+    def smooth_data(self, given_corrected_data, given_pressure):
+        print()
+
+    def average_pressures(self, given_pressure):
+        print()
+
+    def create_plot_vars(self, given_smooth_data, given_avg_pressure):
+        print()
+
+    def plot_data(self, given_plot_vars):
         print()
 
     def wrapper(self):
@@ -378,7 +393,12 @@ class HopeCalculations:
             this_cdf_data = self.read_cdf_data(cdf_obj)
             cdf_objs_data.append(this_cdf_data)
 
-        self.pressure_calculations(cdf_objs_data)
+        corrected_data = self.correct_fluxes(cdf_objs_data)
+        pressure = self.calc_pressure(corrected_data)
+        smoothened_data = self.smooth_data(corrected_data, pressure)
+        averaged_pressures = self.average_pressures(pressure)  # 0s to NaNs
+        plot_vars = self.create_plot_vars(smoothened_data, averaged_pressures)
+        self.plot_data(plot_vars)
 
     # Getters, mostly for testing purposes
     @property
