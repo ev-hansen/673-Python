@@ -39,6 +39,9 @@ __version__ = "0.0.1"
 # TODO: - Replace 0s w/ NANs
 # TODO: - Average Pressures
 # TODO: - Create plot data
+# TODO: - Restructure class to be compatable with other 
+#         data operations, maybe multiple files?
+# TODO: - Rename class
 ############################################################
 
 
