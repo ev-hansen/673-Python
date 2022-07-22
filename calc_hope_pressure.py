@@ -347,12 +347,20 @@ class HopeCalculations:
         return cdf_data
 
     def pressure_calculations(self, 
-                              cdf_data: Dict[dt.datetime, 
-                                             Dict[str, Any]]):
+                              cdf_data: List[Dict[str, Any]]):
+        """Perform the calculations
+
+        Args:
+            cdf_data (List[Dict[str, Any]]): List storing relevant CDF file 
+                                            data, possibly spanning multiple 
+                                            days
+        """
 
         print()
 
     def wrapper(self):
+        """Function to order calculations correctly
+        """
         datetime_list = self.datetime_range_list()
         cdf_objs = self.get_cdf_objs(datetime_list)
         cdf_objs_data = []
