@@ -284,6 +284,8 @@ class HopeCalculations:
         start_time = self.__time_s_datetime
         end_time = self.__time_e_datetime
 
+        factor = self.__factor
+
         # Datetime objs represening timestamps
         t_ion = given_xr_dataset['Epoch_Ion'].squeeze()  # Ion
         t_ele = given_xr_dataset['Epoch_Ele'].squeeze()  # Electron
@@ -321,8 +323,11 @@ class HopeCalculations:
             {'epoch': dt.datetime.fromtimestamp(float(t_ion[i].values)),
              'energy': e_data_ion[i],
              'fpdu': fpdu_data[i],
+             'daty_avg_int_H1': fpdu_data[i].transpose() * factor,
              'fhedu': fhedu_data[i],
-             'fodu': fodu_data[i]
+             'daty_avg_int_He1': fhedu_data[i].transpose() * factor,
+             'fodu': fodu_data[i],
+             'daty_avg_int_O1': fodu_data[i].transpose() * factor
              } for i in tqdm(range(t_ion.size), desc="Ion data") if (
                 (start_time <= dt.datetime.fromtimestamp(float(
                     t_ion[i].values)) <= end_time) and (
