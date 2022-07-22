@@ -20,3 +20,5 @@ Python is required via a conda installation. My current conda environment uses p
 - Replace 0s w/ NANs
 - Average Pressures
 - Create plot data
+- Restructure class to be compatable with other data operations, maybe multiple files?
+- Rename class
