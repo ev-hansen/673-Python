@@ -67,7 +67,6 @@ from pyspedas.rbsp import hope
 
 from tqdm import tqdm
 
-
 # Find OS-specific CDF_LIB path in .env file. Make sure you
 # set whichever is patform-relevant to you
 if (platform.system() == "Windows"):
@@ -320,29 +319,29 @@ class HopeCalculations:
         # mode type: numpy.array[int]
         # fpdu, fhedu, fodu type: numpy.array[numpy.array[float]]
         ion_data_list = [
-            {'epoch': dt.fromtimestamp(float(t_ion[i].values)),
+            {'epoch': dt.datetime.fromtimestamp(float(t_ion[i].values)),
              'energy': e_data_ion[i],
              'fpdu': fpdu_data[i],
              'fhedu': fhedu_data[i],
              'fodu': fodu_data[i]
              } for i in tqdm(range(t_ion.size), desc="Ion data") if (
-                (start_time <= dt.fromtimestamp(float(
+                (start_time <= dt.datetime.fromtimestamp(float(
                     t_ion[i].values)) <= end_time) and (
                         mode_ion[i].values == apogee_mode))
         ]
 
         ele_data_list = [
-            {'epoch': dt.fromtimestamp(float(t_ele[i].values)),
+            {'epoch': dt.datetime.fromtimestamp(float(t_ele[i].values)),
              'energy': e_data_ele[i],
              'fedu': fedu_data[i]
              } for i in tqdm(range(t_ele.size), desc="Electron data") if (
-                (start_time <= dt.fromtimestamp(float(
+                (start_time <= dt.datetime.fromtimestamp(float(
                     t_ele[i].values)) <= end_time) and (
                         mode_ele[i].values == apogee_mode))
         ]   
 
-        cdf_data = {"ion_data_dict": ion_data_list, 
-                    "ele_data_dict": ele_data_list,
+        cdf_data = {"ion_data_list": ion_data_list, 
+                    "ele_data_list": ele_data_list,
                     "pitchangle_data": pitchangle_data}
 
         return cdf_data
@@ -364,7 +363,8 @@ class HopeCalculations:
             current_time = now.strftime("%H:%M:%S")
             print(f"{current_time} Gathering information from " 
                   f"{datetime_list[i]}")
-            cdf_objs_data.append(cdf_obj)
+            this_cdf_data = self.read_cdf_data(cdf_obj)
+            cdf_objs_data.append(this_cdf_data)
 
         self.pressure_calculations(cdf_objs_data)
 
