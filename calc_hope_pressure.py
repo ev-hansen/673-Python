@@ -62,9 +62,6 @@ import xarray as xr
 from xarray.core.dataset import Dataset as XarrDataset
 from pyspedas.rbsp import hope
 
-# Calculations and array/list ops
-import numpy
-
 from tqdm import tqdm
 
 
@@ -188,7 +185,7 @@ class HopeCalculations:
                 cdf_obj_list c(list): cdf file objects in a list
         """
         cdf_obj_list = []
-        for date_obj_i in given_datetime_list:
+        for date_obj_i in tqdm(given_datetime_list, desc="Getting files"):
             now = dt.datetime.now()
             current_time = now.strftime("%H:%M:%S")
             print(f"{current_time} getting file for {date_obj_i}")
@@ -325,7 +322,7 @@ class HopeCalculations:
              'fpdu': fpdu_data[i],
              'fhedu': fhedu_data[i],
              'fodu': fodu_data[i]
-             } for i in tqdm(range(t_ion.size), desc="ion") if (
+             } for i in tqdm(range(t_ion.size), desc="Ion data") if (
                 (start_time <= dt.fromtimestamp(float(
                     t_ion[i].values)) <= end_time) and (
                         mode_ion[i].values == apogee_mode))
@@ -335,7 +332,7 @@ class HopeCalculations:
             {'epoch': dt.fromtimestamp(float(t_ele[i].values)),
              'energy': e_data_ele[i],
              'fedu': fedu_data[i]
-             } for i in tqdm(range(t_ele.size), desc="ele") if (
+             } for i in tqdm(range(t_ele.size), desc="Electron data") if (
                 (start_time <= dt.fromtimestamp(float(
                     t_ele[i].values)) <= end_time) and (
                         mode_ele[i].values == apogee_mode))
@@ -353,41 +350,16 @@ class HopeCalculations:
 
         print()
 
-    def transpose(self, given_list: List[Any]) -> numpy.array:
-        """Transposes a list (swaps rows/columns)
-
-            Parameters:
-                given_list (list): A 2D list
-
-            Returns:
-                transposed_list (arr): given_list transposed as an arr
-        """
-        arr = numpy.array(given_list)
-        transposed = arr.T
-        return transposed
-
-    def reform(self, given_list: List[Any]) -> numpy.array:
-        """Acts similar to how the IDL reform function works in the original code
-
-            Parameters:
-                given_list (list): A list, potentially w/ a dimension of size 1
-
-            Returns:
-                reformed (arr): Numpy arr of list w/o dimension of size 1
-        """
-        arr = numpy.array(given_list)
-        reformed = arr.squeeze()        return reformed
-
     def wrapper(self):
         datetime_list = self.datetime_range_list()
         cdf_objs = self.get_cdf_objs(datetime_list)
         cdf_objs_data = []
 
-        for i in tqdm(range(len(cdf_objs)), desc="getting data"):
+        for i in tqdm(range(len(cdf_objs)), desc="Getting data"):
             cdf_obj = cdf_objs[i]
             now = dt.datetime.now()
             current_time = now.strftime("%H:%M:%S")
-            print(f"{current_time} gathering information from " 
+            print(f"{current_time} Gathering information from " 
                   f"{datetime_list[i]}")
             cdf_objs_data.append(cdf_obj)
 
