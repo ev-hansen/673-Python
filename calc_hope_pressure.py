@@ -535,8 +535,8 @@ def main():
     args = parser.parse_args()
     args_dict = vars(args)
 
-    time_s_str = args_dict['start_time']
-    time_e_str = args_dict['end_time']
+    time_s_str = "2014-08-26/00:00:00"
+    time_e_str = "2014-08-28/06:00:00"
     level = args_dict['level']
     probe = args_dict['probe']
     factor = args_dict['factor']
