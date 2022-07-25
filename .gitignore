@@ -1,8 +1,9 @@
 # dotenv
 .env
 
-# misc dirs
+# misc dirs etc
 rbsp_data/
 pysatCDF/
 test*code/
 .vscode/
+**/.DS_Store
