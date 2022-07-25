@@ -32,6 +32,8 @@ __version__ = "0.0.1"
 
 
 ############################################################
+# TODO: - Filter out values outside low and up energy
+# TODO: - Test plot w/ daty_avg_int
 # TODO: - Correct fluxes
 # TODO: - Calculate Pressure
 # TODO: - Smooth data
@@ -285,6 +287,8 @@ class HopeCalculations:
         end_time = self.__time_e_datetime
 
         factor = self.__factor
+        low_energy = self.__low_energy
+        up_energy = self.__up_energy
 
         # Datetime objs represening timestamps
         t_ion = given_xr_dataset['Epoch_Ion'].squeeze()  # Ion
@@ -375,6 +379,9 @@ class HopeCalculations:
         print()
 
     def plot_data(self, given_plot_vars):
+        print()
+
+    def test_plot(self, given_cdf_data):
         print()
 
     def wrapper(self):
@@ -539,9 +546,9 @@ def main():
     relat = args_dict['relat']
     swindow = args_dict['swindow']
 
-    main_calculations = HopeCalculations(time_s_str, time_e_str, probe, level, 
-                                         relat, factor, low_energy, up_energy, 
-                                         pot_corr, swindow)
+    main_calculations = HopeCalculations(time_s_str, time_e_str, probe,
+                                         level, factor, low_energy, up_energy, 
+                                         pot_corr, relat, swindow)
 
     main_calculations.wrapper()
 
