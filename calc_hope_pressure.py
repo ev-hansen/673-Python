@@ -66,15 +66,18 @@ import xarray as xr
 from xarray.core.dataset import Dataset as XarrDataset
 from pyspedas.rbsp import hope
 
-import numpy as np
-import pandas as pd
+import matplotlib as mpl
 import matplotlib.pyplot as plt
-
-from objbrowser import browse
 
 from tqdm import tqdm
 
-# Find OS-specific CDF_LIB path in .env file. Make sure you
+# matplotlib settings, feel free to change
+mpl.rcParams['lines.linewidth'] = 1
+mpl.rcParams.update({'font.size': 10})
+mpl.rcParams["figure.figsize"] = [14.1, 9.7]
+mpl.rcParams["figure.dpi"] = 226
+
+# Find OS-specific paths from .env file. Make sure you
 # set whichever is patform-relevant to you
 if (platform.system() == "Windows"):
     HOME_DIR = os.environ["WIN_HOME_DIR"]
@@ -404,61 +407,92 @@ class HopeCalculations:
 
         test_h1_data_1 = [
             ion_data[i]['daty_avg_int_H1'][test_bin_1 - 1][test_pa - 1] 
-            for i in tqdm(range(len(ion_data)), desc='H bin 20')]
+            for i in tqdm(range(len(ion_data)), desc='H1 bin 20')]
         test_h1_data_2 = [
             ion_data[i]['daty_avg_int_H1'][test_bin_2 - 1][test_pa - 1] 
-            for i in tqdm(range(len(ion_data)), desc='H bin 40')]
+            for i in tqdm(range(len(ion_data)), desc='H1 bin 40')]
         test_h1_data_3 = [
             ion_data[i]['daty_avg_int_H1'][test_bin_3 - 1][test_pa - 1] 
-            for i in tqdm(range(len(ion_data)), desc='H bin 60')]
+            for i in tqdm(range(len(ion_data)), desc='H1 bin 60')]
         test_h1_data_4 = [
             ion_data[i]['daty_avg_int_H1'][test_bin_4 - 1][test_pa - 1] 
-            for i in tqdm(range(len(ion_data)), desc='H bin 72')]
+            for i in tqdm(range(len(ion_data)), desc='H1 bin 72')]
 
         test_he1_data_1 = [
             ion_data[i]['daty_avg_int_He1'][test_bin_1 - 1][test_pa - 1] 
-            for i in tqdm(range(len(ion_data)), desc='He bin 20')]
+            for i in tqdm(range(len(ion_data)), desc='He1 bin 20')]
         test_he1_data_2 = [
             ion_data[i]['daty_avg_int_He1'][test_bin_2 - 1][test_pa - 1] 
-            for i in tqdm(range(len(ion_data)), desc='He bin 40')]
+            for i in tqdm(range(len(ion_data)), desc='He1 bin 40')]
         test_he1_data_3 = [
             ion_data[i]['daty_avg_int_He1'][test_bin_3 - 1][test_pa - 1] 
-            for i in tqdm(range(len(ion_data)), desc='He bin 60')]
+            for i in tqdm(range(len(ion_data)), desc='He1 bin 60')]
         test_he1_data_4 = [
             ion_data[i]['daty_avg_int_He1'][test_bin_4 - 1][test_pa - 1] 
-            for i in tqdm(range(len(ion_data)), desc='He bin 72')]
+            for i in tqdm(range(len(ion_data)), desc='He1 bin 72')]
+
+        test_o1_data_1 = [
+            ion_data[i]['daty_avg_int_O1'][test_bin_1 - 1][test_pa - 1] 
+            for i in tqdm(range(len(ion_data)), desc='O1 bin 20')]
+        test_o1_data_2 = [
+            ion_data[i]['daty_avg_int_O1'][test_bin_2 - 1][test_pa - 1] 
+            for i in tqdm(range(len(ion_data)), desc='O1 bin 40')]
+        test_o1_data_3 = [
+            ion_data[i]['daty_avg_int_O1'][test_bin_3 - 1][test_pa - 1] 
+            for i in tqdm(range(len(ion_data)), desc='O1 bin 60')]
+        test_o1_data_4 = [
+            ion_data[i]['daty_avg_int_O1'][test_bin_4 - 1][test_pa - 1] 
+            for i in tqdm(range(len(ion_data)), desc='O1 bin 72')]
 
         test_dates = [ion_data[i]['epoch'] for i in tqdm(range(len(ion_data)))]
 
-        fig, axs1 = plt.subplots(2, 2)
-        fig2, axs2 = plt.subplots(2, 2)
+        h1_fig, h1_axs = plt.subplots(2, 2)
+        he1_fig, he1_axs = plt.subplots(2, 2)
+        o1_fig, o1_axs = plt.subplots(2, 2)
 
-        axs1[0, 0].set_title('H1 PA 5, Energy Bin 20')
-        axs1[0, 0].plot(test_dates, test_h1_data_1)
-        axs1[0, 1].set_title('H1 PA 5, Energy Bin 40')
-        axs1[0, 1].plot(test_dates, test_h1_data_2)
-        axs1[1, 0].set_title('H1 PA 5, Energy Bin 60')
-        axs1[1, 0].plot(test_dates, test_h1_data_3)
-        axs1[1, 1].set_title('H1 PA 5, Energy Bin 72')
-        axs1[1, 1].plot(test_dates, test_h1_data_4)
+        h1_axs[0, 0].set_title('H1 PA 5, Energy Bin 20')
+        h1_axs[0, 0].plot(test_dates, test_h1_data_1)
+        h1_axs[0, 1].set_title('H1 PA 5, Energy Bin 40')
+        h1_axs[0, 1].plot(test_dates, test_h1_data_2)
+        h1_axs[1, 0].set_title('H1 PA 5, Energy Bin 60')
+        h1_axs[1, 0].plot(test_dates, test_h1_data_3)
+        h1_axs[1, 1].set_title('H1 PA 5, Energy Bin 72')
+        h1_axs[1, 1].plot(test_dates, test_h1_data_4)
 
-        axs2[0, 0].set_title('He1 PA 5, Energy Bin 20')
-        axs2[0, 0].plot(test_dates, test_he1_data_1)
-        axs2[0, 1].set_title('He1 PA 5, Energy Bin 40')
-        axs2[0, 1].plot(test_dates, test_he1_data_2)
-        axs2[1, 0].set_title('He1 PA 5, Energy Bin 60')
-        axs2[1, 0].plot(test_dates, test_he1_data_3)
-        axs2[1, 1].set_title('He1 PA 5, Energy Bin 72')
-        axs2[1, 1].plot(test_dates, test_he1_data_4)
+        he1_axs[0, 0].set_title('He1 PA 5, Energy Bin 20')
+        he1_axs[0, 0].plot(test_dates, test_he1_data_1)
+        he1_axs[0, 1].set_title('He1 PA 5, Energy Bin 40')
+        he1_axs[0, 1].plot(test_dates, test_he1_data_2)
+        he1_axs[1, 0].set_title('He1 PA 5, Energy Bin 60')
+        he1_axs[1, 0].plot(test_dates, test_he1_data_3)
+        he1_axs[1, 1].set_title('He1 PA 5, Energy Bin 72')
+        he1_axs[1, 1].plot(test_dates, test_he1_data_4)
 
-        for ax in axs1.flat:
+        o1_axs[0, 0].set_title('O1 PA 5, Energy Bin 20')
+        o1_axs[0, 0].plot(test_dates, test_o1_data_1)
+        o1_axs[0, 1].set_title('O1 PA 5, Energy Bin 40')
+        o1_axs[0, 1].plot(test_dates, test_o1_data_2)
+        o1_axs[1, 0].set_title('O1 PA 5, Energy Bin 60')
+        o1_axs[1, 0].plot(test_dates, test_o1_data_3)
+        o1_axs[1, 1].set_title('O1 PA 5, Energy Bin 72')
+        o1_axs[1, 1].plot(test_dates, test_o1_data_4)
+
+        for axs in [h1_axs, he1_axs, o1_axs]:
+            for ax in axs.flat:
+                ax.set_yscale('log')
+
+        for ax in h1_axs.flat:
             ax.set(xlabel='time', ylabel='daty_avg_int_H1')
-        for ax in axs2.flat:
+
+        for ax in he1_axs.flat:
             ax.set(xlabel='time', ylabel='daty_avg_int_He1')
 
-        plt.yscale('log')
+        for ax in o1_axs.flat:
+            ax.set(xlabel='time', ylabel='daty_avg_int_O1')  
 
-        plt.show()
+        h1_fig.savefig('figout_H1.svg', format='svg')
+        he1_fig.savefig('figout_He1.svg', format='svg')
+        o1_fig.savefig('figout_O1.svg', format='svg')
 
     def wrapper(self):
         """Function to order calculations correctly

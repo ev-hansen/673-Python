@@ -1,9 +1,10 @@
 # dotenv
 .env
 
-# misc dirs etc
+# misc 
 rbsp_data/
 pysatCDF/
 test*code/
 .vscode/
 **/.DS_Store
+figout*
