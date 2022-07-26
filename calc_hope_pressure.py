@@ -66,6 +66,12 @@ import xarray as xr
 from xarray.core.dataset import Dataset as XarrDataset
 from pyspedas.rbsp import hope
 
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from objbrowser import browse
+
 from tqdm import tqdm
 
 # Find OS-specific CDF_LIB path in .env file. Make sure you
@@ -331,7 +337,7 @@ class HopeCalculations:
              } for i in tqdm(
                  range(len(given_datasets)), desc="cdf ion")
             for j in tqdm(range(given_datasets[i]['Epoch_Ion'].size), 
-                          desc="Ion data") 
+                          desc=f"Ion data #{i+1}") 
             if ((start_time <= dt.datetime.fromtimestamp(float(
                 given_datasets[i]['Epoch_Ion'].values[j])) <= end_time) and 
                 (given_datasets[i]['Mode_Ion'][j].values == apogee_mode))]
@@ -347,7 +353,7 @@ class HopeCalculations:
              } for i in tqdm(
                  range(len(given_datasets)), desc="cdf ele") 
             for j in tqdm(range(given_datasets[i]['Epoch_Ele'].size),
-                          desc="Ele data") 
+                          desc=f"Ele data #{i+1}") 
             if ((start_time <= dt.datetime.fromtimestamp(float(
                 given_datasets[i]['Epoch_Ele'].values[j])) <= end_time) and
                 (given_datasets[i]['Mode_Ele'][j].values == apogee_mode))]
@@ -388,7 +394,47 @@ class HopeCalculations:
         print()
 
     def test_plot(self, given_cdf_data):
-        print()
+        test_pa = 5
+        test_bin_1 = 20
+        test_bin_2 = 40
+        test_bin_3 = 60
+        test_bin_4 = 72
+
+        ion_data = given_cdf_data['ion_data_list']
+
+        test_data_1 = [
+            ion_data[i]['daty_avg_int_H1'][test_bin_1 - 1][test_pa - 1] 
+            for i in tqdm(range(len(ion_data)), desc='bin 20')]
+        test_data_2 = [
+            ion_data[i]['daty_avg_int_H1'][test_bin_2 - 1][test_pa - 1] 
+            for i in tqdm(range(len(ion_data)), desc='bin 40')]
+        test_data_3 = [
+            ion_data[i]['daty_avg_int_H1'][test_bin_3 - 1][test_pa - 1] 
+            for i in tqdm(range(len(ion_data)), desc='bin 60')]
+        test_data_4 = [
+            ion_data[i]['daty_avg_int_H1'][test_bin_4 - 1][test_pa - 1] 
+            for i in tqdm(range(len(ion_data)), desc='bin 72')]
+
+        test_dates = [ion_data[i]['epoch'] for i in tqdm(range(len(ion_data)))]
+
+        fig, axs = plt.subplots(2, 2)
+
+        axs[0, 0].set_title('PA 5, Energy Bin 20')
+        axs[0, 0].plot(test_dates, test_data_1)
+
+        axs[0, 1].set_title('PA 5, Energy Bin 40')
+        axs[0, 1].plot(test_dates, test_data_2)
+
+        axs[1, 0].set_title('PA 5, Energy Bin 60')
+        axs[1, 0].plot(test_dates, test_data_3)
+
+        axs[1, 1].set_title('PA 5, Energy Bin 72')
+        axs[1, 1].plot(test_dates, test_data_4)
+
+        for ax in axs.flat:
+            ax.set(xlabel='time', ylabel='daty_avg_int_H1')
+
+        plt.show()
 
     def wrapper(self):
         """Function to order calculations correctly
@@ -396,6 +442,8 @@ class HopeCalculations:
         datetime_list = self.datetime_range_list()
         cdf_objs = self.get_cdf_objs(datetime_list)
         cdf_objs_data = self.read_cdf_data(cdf_objs)
+
+        self.test_plot(cdf_objs_data)
 
         corrected_data = self.correct_fluxes(cdf_objs_data)
         pressure = self.calc_pressure(corrected_data)
