@@ -33,7 +33,6 @@ __version__ = "0.0.1"
 
 ############################################################
 # TODO: - Filter out values outside low and up energy
-# TODO: - Test plot w/ daty_avg_int
 # TODO: - Correct fluxes
 # TODO: - Calculate Pressure
 # TODO: - Smooth data
