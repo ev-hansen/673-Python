@@ -266,7 +266,8 @@ class HopeCalculations:
                                        fillval_to_nan=True)
         return dataset
 
-    def read_cdf_data(self, given_xr_dataset: cdflib.CDF) -> Dict[str, Any]:
+    def read_cdf_data(self, 
+                      given_datasets: List[cdflib.CDF]) -> Dict[str, Any]:
         """Gather data from the given CDF object
 
             Args:
@@ -291,12 +292,7 @@ class HopeCalculations:
         up_energy = self.__up_energy
 
         # Datetime objs represening timestamps
-        t_ion = given_xr_dataset['Epoch_Ion'].squeeze()  # Ion
-        t_ele = given_xr_dataset['Epoch_Ele'].squeeze()  # Electron
-
         # 
-        e_data_ion = given_xr_dataset['HOPE_ENERGY_Ion']
-        e_data_ele = given_xr_dataset['HOPE_ENERGY_Ele']
 
         # Mode of data collection
         # 0 is Apogee Mode, 1 is Perigee Mode, 2 is Burst Mode
@@ -304,16 +300,6 @@ class HopeCalculations:
         # (1) Perigee mode: minimum energy channel
         # (2) burst mode: subset of energies sampled at rapid cadence.
         # burst mode is only used for electron operations.
-        mode_ion = given_xr_dataset['Mode_Ion']
-        mode_ele = given_xr_dataset['Mode_Ele']
-
-        # Data of the "species," function of pitchangle"
-        fpdu_data = given_xr_dataset['FPDU']  # proton flux
-        fhedu_data = given_xr_dataset['FHEDU']  # hydrogen flux
-        fodu_data = given_xr_dataset['FODU']  # oxygen flux
-        fedu_data = given_xr_dataset['FEDU']  # electron flux
-
-        pitchangle_data = given_xr_dataset['PITCH_ANGLE']
 
         apogee_mode = 0
 
@@ -323,34 +309,54 @@ class HopeCalculations:
         # data type: numpy.array[numpy.array[float]]
         # mode type: numpy.array[int]
         # fpdu, fhedu, fodu type: numpy.array[numpy.array[float]]
+
         ion_data_list = [
-            {'epoch': dt.datetime.fromtimestamp(float(t_ion[i].values)),
-             'energy': e_data_ion[i],
-             'fpdu': fpdu_data[i],
-             'daty_avg_int_H1': fpdu_data[i].transpose() * factor,
-             'fhedu': fhedu_data[i],
-             'daty_avg_int_He1': fhedu_data[i].transpose() * factor,
-             'fodu': fodu_data[i],
-             'daty_avg_int_O1': fodu_data[i].transpose() * factor
-             } for i in tqdm(range(t_ion.size), desc="Ion data") if (
-                (start_time <= dt.datetime.fromtimestamp(float(
-                    t_ion[i].values)) <= end_time) and (
-                        mode_ion[i].values == apogee_mode))
-        ]
+            {'epoch': 
+                dt.datetime.fromtimestamp(float(
+                    given_datasets[i]['Epoch_Ion'].squeeze()[j].values)),
+                'energy': 
+                    given_datasets[i]['HOPE_ENERGY_Ion'][j],
+                'fpdu': 
+                    given_datasets[i]['FPDU'][j],
+                'daty_avg_int_H1': 
+                    given_datasets[i]['FPDU'][j].transpose() * factor,
+                'fhedu': 
+                    given_datasets[i]['FHEDU'][j],
+                'daty_avg_int_He1': 
+                    given_datasets[i]['FHEDU'][j].transpose() * factor,
+                'fodu': 
+                    given_datasets[i]['FODU'][j],
+                'daty_avg_int_O1': 
+                    given_datasets[i]['FODU'][j].transpose() * factor
+             } for i in tqdm(
+                 range(len(given_datasets)), desc="cdf ion")
+            for j in tqdm(range(given_datasets[i]['Epoch_Ion'].size), 
+                          desc="Ion data") 
+            if ((start_time <= dt.datetime.fromtimestamp(float(
+                given_datasets[i]['Epoch_Ion'].values[j])) <= end_time) and 
+                (given_datasets[i]['Mode_Ion'][j].values == apogee_mode))]
 
         ele_data_list = [
-            {'epoch': dt.datetime.fromtimestamp(float(t_ele[i].values)),
-             'energy': e_data_ele[i],
-             'fedu': fedu_data[i]
-             } for i in tqdm(range(t_ele.size), desc="Electron data") if (
-                (start_time <= dt.datetime.fromtimestamp(float(
-                    t_ele[i].values)) <= end_time) and (
-                        mode_ele[i].values == apogee_mode))
-        ]   
+            {'epoch':
+                dt.datetime.fromtimestamp(float(
+                    given_datasets[i]['Epoch_Ele'].squeeze()[j].values)),
+             'energy':
+                 given_datasets[i]['HOPE_ENERGY_Ele'][j],
+             'fedu': 
+                 given_datasets[i]['FEDU'][j]
+             } for i in tqdm(
+                 range(len(given_datasets)), desc="cdf ele") 
+            for j in tqdm(range(given_datasets[i]['Epoch_Ele'].size),
+                          desc="Ele data") 
+            if ((start_time <= dt.datetime.fromtimestamp(float(
+                given_datasets[i]['Epoch_Ele'].values[j])) <= end_time) and
+                (given_datasets[i]['Mode_Ele'][j].values == apogee_mode))]
 
         cdf_data = {"ion_data_list": ion_data_list, 
                     "ele_data_list": ele_data_list,
-                    "pitchangle_data": pitchangle_data}
+                    "pitchangle_data": [given_datasets[i]['PITCH_ANGLE'] 
+                                        for i in tqdm(
+                                            range(len(given_datasets)))]}
 
         return cdf_data
 
@@ -389,16 +395,7 @@ class HopeCalculations:
         """
         datetime_list = self.datetime_range_list()
         cdf_objs = self.get_cdf_objs(datetime_list)
-        cdf_objs_data = []
-
-        for i in tqdm(range(len(cdf_objs)), desc="Getting data"):
-            cdf_obj = cdf_objs[i]
-            now = dt.datetime.now()
-            current_time = now.strftime("%H:%M:%S")
-            print(f"{current_time} Gathering information from " 
-                  f"{datetime_list[i]}")
-            this_cdf_data = self.read_cdf_data(cdf_obj)
-            cdf_objs_data.append(this_cdf_data)
+        cdf_objs_data = self.read_cdf_data(cdf_objs)
 
         corrected_data = self.correct_fluxes(cdf_objs_data)
         pressure = self.calc_pressure(corrected_data)
