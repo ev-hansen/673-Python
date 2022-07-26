@@ -15,7 +15,6 @@ Python is required via a conda installation. My current conda environment uses p
 
 # TODO (``calc_hope_pressure.py``)
 - Filter out values outside low and up energy
-- Test plot w/ daty_avg_int
 - Correct fluxes
 - Calculate Pressure
 - Smooth data
