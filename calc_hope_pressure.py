@@ -402,37 +402,61 @@ class HopeCalculations:
 
         ion_data = given_cdf_data['ion_data_list']
 
-        test_data_1 = [
+        test_h1_data_1 = [
             ion_data[i]['daty_avg_int_H1'][test_bin_1 - 1][test_pa - 1] 
-            for i in tqdm(range(len(ion_data)), desc='bin 20')]
-        test_data_2 = [
+            for i in tqdm(range(len(ion_data)), desc='H bin 20')]
+        test_h1_data_2 = [
             ion_data[i]['daty_avg_int_H1'][test_bin_2 - 1][test_pa - 1] 
-            for i in tqdm(range(len(ion_data)), desc='bin 40')]
-        test_data_3 = [
+            for i in tqdm(range(len(ion_data)), desc='H bin 40')]
+        test_h1_data_3 = [
             ion_data[i]['daty_avg_int_H1'][test_bin_3 - 1][test_pa - 1] 
-            for i in tqdm(range(len(ion_data)), desc='bin 60')]
-        test_data_4 = [
+            for i in tqdm(range(len(ion_data)), desc='H bin 60')]
+        test_h1_data_4 = [
             ion_data[i]['daty_avg_int_H1'][test_bin_4 - 1][test_pa - 1] 
-            for i in tqdm(range(len(ion_data)), desc='bin 72')]
+            for i in tqdm(range(len(ion_data)), desc='H bin 72')]
+
+        test_he1_data_1 = [
+            ion_data[i]['daty_avg_int_He1'][test_bin_1 - 1][test_pa - 1] 
+            for i in tqdm(range(len(ion_data)), desc='He bin 20')]
+        test_he1_data_2 = [
+            ion_data[i]['daty_avg_int_He1'][test_bin_2 - 1][test_pa - 1] 
+            for i in tqdm(range(len(ion_data)), desc='He bin 40')]
+        test_he1_data_3 = [
+            ion_data[i]['daty_avg_int_He1'][test_bin_3 - 1][test_pa - 1] 
+            for i in tqdm(range(len(ion_data)), desc='He bin 60')]
+        test_he1_data_4 = [
+            ion_data[i]['daty_avg_int_He1'][test_bin_4 - 1][test_pa - 1] 
+            for i in tqdm(range(len(ion_data)), desc='He bin 72')]
 
         test_dates = [ion_data[i]['epoch'] for i in tqdm(range(len(ion_data)))]
 
-        fig, axs = plt.subplots(2, 2)
+        fig, axs1 = plt.subplots(2, 2)
+        fig2, axs2 = plt.subplots(2, 2)
 
-        axs[0, 0].set_title('PA 5, Energy Bin 20')
-        axs[0, 0].plot(test_dates, test_data_1)
+        axs1[0, 0].set_title('H1 PA 5, Energy Bin 20')
+        axs1[0, 0].plot(test_dates, test_h1_data_1)
+        axs1[0, 1].set_title('H1 PA 5, Energy Bin 40')
+        axs1[0, 1].plot(test_dates, test_h1_data_2)
+        axs1[1, 0].set_title('H1 PA 5, Energy Bin 60')
+        axs1[1, 0].plot(test_dates, test_h1_data_3)
+        axs1[1, 1].set_title('H1 PA 5, Energy Bin 72')
+        axs1[1, 1].plot(test_dates, test_h1_data_4)
 
-        axs[0, 1].set_title('PA 5, Energy Bin 40')
-        axs[0, 1].plot(test_dates, test_data_2)
+        axs2[0, 0].set_title('He1 PA 5, Energy Bin 20')
+        axs2[0, 0].plot(test_dates, test_he1_data_1)
+        axs2[0, 1].set_title('He1 PA 5, Energy Bin 40')
+        axs2[0, 1].plot(test_dates, test_he1_data_2)
+        axs2[1, 0].set_title('He1 PA 5, Energy Bin 60')
+        axs2[1, 0].plot(test_dates, test_he1_data_3)
+        axs2[1, 1].set_title('He1 PA 5, Energy Bin 72')
+        axs2[1, 1].plot(test_dates, test_he1_data_4)
 
-        axs[1, 0].set_title('PA 5, Energy Bin 60')
-        axs[1, 0].plot(test_dates, test_data_3)
-
-        axs[1, 1].set_title('PA 5, Energy Bin 72')
-        axs[1, 1].plot(test_dates, test_data_4)
-
-        for ax in axs.flat:
+        for ax in axs1.flat:
             ax.set(xlabel='time', ylabel='daty_avg_int_H1')
+        for ax in axs2.flat:
+            ax.set(xlabel='time', ylabel='daty_avg_int_He1')
+
+        plt.yscale('log')
 
         plt.show()
 
