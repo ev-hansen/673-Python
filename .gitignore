@@ -8,3 +8,4 @@ test*code/
 .vscode/
 **/.DS_Store
 figout*
+__pycache__
