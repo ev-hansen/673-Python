@@ -404,50 +404,114 @@ class HopeCalculations:
 
         ion_data = given_cdf_data['ion_data_list']
 
+        test_ion_data_1 = [
+            ion_data[i]['energy'][test_bin_1 - 1]
+            for i in tqdm(range(len(ion_data)), 
+                          desc=f'Ion energy bin {test_bin_1}')]
+        test_ion_data_2 = [
+            ion_data[i]['energy'][test_bin_2 - 1]
+            for i in tqdm(range(len(ion_data)), 
+                          desc=f'Ion energy bin {test_bin_2}')]
+        test_ion_data_3 = [
+            ion_data[i]['energy'][test_bin_3 - 1]
+            for i in tqdm(range(len(ion_data)), 
+                          desc=f'Ion energy bin {test_bin_3}')]
+        test_ion_data_4 = [
+            ion_data[i]['energy'][test_bin_4 - 1]
+            for i in tqdm(range(len(ion_data)), 
+                          desc=f'Ion energy bin {test_bin_4}')]
+
         test_h1_data_1 = [
-            ion_data[i]['daty_avg_int_H1'][test_bin_1 - 1][test_pa - 1] 
-            for i in tqdm(range(len(ion_data)), desc='H1 bin 20')]
+            ion_data[i]['daty_avg_int_H1'][test_bin_1 - 1][test_pa - 1]
+            for i in tqdm(range(len(ion_data)), 
+                          desc=f'H1 bin {test_bin_1}')]
+        print(f"h1 bin {test_bin_1} energy: "
+              f"{test_h1_data_1[0]['HOPE_ENERGY_Ion'].values}")
         test_h1_data_2 = [
-            ion_data[i]['daty_avg_int_H1'][test_bin_2 - 1][test_pa - 1] 
-            for i in tqdm(range(len(ion_data)), desc='H1 bin 40')]
+            ion_data[i]['daty_avg_int_H1'][test_bin_2 - 1][test_pa - 1]
+            for i in tqdm(range(len(ion_data)), 
+                          desc=f'H1 bin {test_bin_2}')]
+        print(f"h1 bin {test_bin_2} energy: "
+              f"{test_h1_data_2[0]['HOPE_ENERGY_Ion'].values}")
         test_h1_data_3 = [
-            ion_data[i]['daty_avg_int_H1'][test_bin_3 - 1][test_pa - 1] 
-            for i in tqdm(range(len(ion_data)), desc='H1 bin 60')]
+            ion_data[i]['daty_avg_int_H1'][test_bin_3 - 1][test_pa - 1]
+            for i in tqdm(range(len(ion_data)), 
+                          desc=f'H1 bin {test_bin_3}')]
+        print(f"h1 bin {test_bin_3} energy: "
+              f"{test_h1_data_3[0]['HOPE_ENERGY_Ion'].values}")
         test_h1_data_4 = [
-            ion_data[i]['daty_avg_int_H1'][test_bin_4 - 1][test_pa - 1] 
-            for i in tqdm(range(len(ion_data)), desc='H1 bin 72')]
+            ion_data[i]['daty_avg_int_H1'][test_bin_4 - 1][test_pa - 1]
+            for i in tqdm(range(len(ion_data)), 
+                          desc=f'H1 bin {test_bin_4}')]
+        print(f"h1 bin {test_bin_4} energy: "
+              f"{test_h1_data_4[0]['HOPE_ENERGY_Ion'].values}")
 
         test_he1_data_1 = [
-            ion_data[i]['daty_avg_int_He1'][test_bin_1 - 1][test_pa - 1] 
-            for i in tqdm(range(len(ion_data)), desc='He1 bin 20')]
+            ion_data[i]['daty_avg_int_He1'][test_bin_1 - 1][test_pa - 1]
+            for i in tqdm(range(len(ion_data)), 
+                          desc=f'He1 bin {test_bin_1}')]
+        print(f"he1 bin {test_bin_1} energy: "
+              f"{test_he1_data_1[0]['HOPE_ENERGY_Ion'].values}")
         test_he1_data_2 = [
-            ion_data[i]['daty_avg_int_He1'][test_bin_2 - 1][test_pa - 1] 
-            for i in tqdm(range(len(ion_data)), desc='He1 bin 40')]
+            ion_data[i]['daty_avg_int_He1'][test_bin_2 - 1][test_pa - 1]
+            for i in tqdm(range(len(ion_data)), 
+                          desc=f'He1 bin {test_bin_2}')]
+        print(f"he1 bin {test_bin_2} energy: "
+              f"{test_he1_data_2[0]['HOPE_ENERGY_Ion'].values}")
         test_he1_data_3 = [
-            ion_data[i]['daty_avg_int_He1'][test_bin_3 - 1][test_pa - 1] 
-            for i in tqdm(range(len(ion_data)), desc='He1 bin 60')]
+            ion_data[i]['daty_avg_int_He1'][test_bin_3 - 1][test_pa - 1]
+            for i in tqdm(range(len(ion_data)), 
+                          desc=f'He1 bin {test_bin_3}')]
+        print(f"he1 bin {test_bin_3} energy: "
+              f"{test_he1_data_3[0]['HOPE_ENERGY_Ion'].values}")
         test_he1_data_4 = [
-            ion_data[i]['daty_avg_int_He1'][test_bin_4 - 1][test_pa - 1] 
-            for i in tqdm(range(len(ion_data)), desc='He1 bin 72')]
+            ion_data[i]['daty_avg_int_He1'][test_bin_4 - 1][test_pa - 1]
+            for i in tqdm(range(len(ion_data)), 
+                          desc=f'He1 bin {test_bin_4}')]
+        print(f"he1 bin {test_bin_4} energy: "
+              f"{test_he1_data_4[0]['HOPE_ENERGY_Ion'].values}")
 
         test_o1_data_1 = [
-            ion_data[i]['daty_avg_int_O1'][test_bin_1 - 1][test_pa - 1] 
-            for i in tqdm(range(len(ion_data)), desc='O1 bin 20')]
+            ion_data[i]['daty_avg_int_O1'][test_bin_1 - 1][test_pa - 1]
+            for i in tqdm(range(len(ion_data)), 
+                          desc=f'O1 bin {test_bin_1}')]
+        print(f"o1 bin {test_bin_1} energy: "
+              f"{test_o1_data_1[0]['HOPE_ENERGY_Ion'].values}")
         test_o1_data_2 = [
-            ion_data[i]['daty_avg_int_O1'][test_bin_2 - 1][test_pa - 1] 
-            for i in tqdm(range(len(ion_data)), desc='O1 bin 40')]
+            ion_data[i]['daty_avg_int_O1'][test_bin_2 - 1][test_pa - 1]
+            for i in tqdm(range(len(ion_data)), 
+                          desc=f'O1 bin {test_bin_2}')]
+        print(f"o1 bin {test_bin_2} energy: "
+              f"{test_o1_data_2[0]['HOPE_ENERGY_Ion'].values}")
         test_o1_data_3 = [
-            ion_data[i]['daty_avg_int_O1'][test_bin_3 - 1][test_pa - 1] 
-            for i in tqdm(range(len(ion_data)), desc='O1 bin 60')]
+            ion_data[i]['daty_avg_int_O1'][test_bin_3 - 1][test_pa - 1]
+            for i in tqdm(range(len(ion_data)), 
+                          desc=f'O1 bin {test_bin_3}')]
+        print(f"o1 bin {test_bin_3} energy: "
+              f"{test_o1_data_3[0]['HOPE_ENERGY_Ion'].values}")
         test_o1_data_4 = [
-            ion_data[i]['daty_avg_int_O1'][test_bin_4 - 1][test_pa - 1] 
-            for i in tqdm(range(len(ion_data)), desc='O1 bin 72')]
+            ion_data[i]['daty_avg_int_O1'][test_bin_4 - 1][test_pa - 1]
+            for i in tqdm(range(len(ion_data)), 
+                          desc=f'O1 bin {test_bin_4}')]
+        print(f"o1 bin {test_bin_4} energy: "
+              f"{test_o1_data_4[0]['HOPE_ENERGY_Ion'].values}")
 
-        test_dates = [ion_data[i]['epoch'] for i in tqdm(range(len(ion_data)))]
+        test_dates = [ion_data[i]['epoch'] for i in tqdm(range(len(ion_data)), 
+                                                         desc='getting dates')]
 
+        ion_fig, ion_axs = plt.subplots(2, 2)
         h1_fig, h1_axs = plt.subplots(2, 2)
         he1_fig, he1_axs = plt.subplots(2, 2)
         o1_fig, o1_axs = plt.subplots(2, 2)
+
+        ion_axs[0, 0].set_title('Ion energy, Bin 20')
+        ion_axs[0, 0].plot(test_dates, test_ion_data_1)
+        ion_axs[0, 1].set_title('Ion energy, Bin 40')
+        ion_axs[0, 1].plot(test_dates, test_ion_data_2)
+        ion_axs[1, 0].set_title('Ion energy, Bin 60')
+        ion_axs[1, 0].plot(test_dates, test_ion_data_3)
+        ion_axs[1, 1].set_title('Ion energy, Bin 72')
+        ion_axs[1, 1].plot(test_dates, test_ion_data_4)
 
         h1_axs[0, 0].set_title('H1 PA 5, Energy Bin 20')
         h1_axs[0, 0].plot(test_dates, test_h1_data_1)
@@ -480,6 +544,9 @@ class HopeCalculations:
             for ax in axs.flat:
                 ax.set_yscale('log')
 
+        for ax in ion_axs.flat:
+            ax.set(xlabel='time', ylabel='HOPE_ENERGY_Ion')
+
         for ax in h1_axs.flat:
             ax.set(xlabel='time', ylabel='daty_avg_int_H1')
 
@@ -489,9 +556,14 @@ class HopeCalculations:
         for ax in o1_axs.flat:
             ax.set(xlabel='time', ylabel='daty_avg_int_O1')  
 
+        ion_fig.savefig('figout_ion.svg', format='svg')
+        ion_fig.savefig('figout_ion.png', format='png')
         h1_fig.savefig('figout_H1.svg', format='svg')
+        h1_fig.savefig('figout_H1.png', format='png')
         he1_fig.savefig('figout_He1.svg', format='svg')
+        he1_fig.savefig('figout_He1.png', format='png')
         o1_fig.savefig('figout_O1.svg', format='svg')
+        o1_fig.savefig('figout_O1.png', format='png')
 
     def wrapper(self):
         """Function to order calculations correctly
