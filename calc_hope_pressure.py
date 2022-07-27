@@ -395,20 +395,6 @@ class HopeCalculations:
     def plot_data(self, given_plot_vars):
         print()
 
-    def wrapper(self):
-        """Function to order calculations correctly
-        """
-        datetime_list = self.datetime_range_list()
-        cdf_objs = self.get_cdf_objs(datetime_list)
-        cdf_objs_data = self.read_cdf_data(cdf_objs)
-
-        corrected_data = self.correct_fluxes(cdf_objs_data)
-        pressure = self.calc_pressure(corrected_data)
-        smoothened_data = self.smooth_data(corrected_data, pressure)
-        averaged_pressures = self.average_pressures(pressure)  # 0s to NaNs
-        plot_vars = self.create_plot_vars(smoothened_data, averaged_pressures)
-        self.plot_data(plot_vars)
-
     # Getters, mostly for testing purposes
     @property
     def time_s_str(self) -> str:
@@ -537,8 +523,8 @@ def main():
     args = parser.parse_args()
     args_dict = vars(args)
 
-    time_s_str = "2014-08-26/00:00:00"
-    time_e_str = "2014-08-28/06:00:00"
+    time_s_str = args_dict['start_time']
+    time_e_str = args_dict['end_time']
     level = args_dict['level']
     probe = args_dict['probe']
     factor = args_dict['factor']
@@ -552,7 +538,17 @@ def main():
                                          level, factor, low_energy, up_energy, 
                                          pot_corr, relat, swindow)
 
-    main_calculations.wrapper()
+    datetime_list = main_calculations.datetime_range_list()
+    cdf_objs = main_calculations.get_cdf_objs(datetime_list)
+    cdf_objs_data = main_calculations.read_cdf_data(cdf_objs)
+
+    corrected_data = main_calculations.correct_fluxes(cdf_objs_data)
+    pressure = main_calculations.calc_pressure(corrected_data)
+    smoothened_data = main_calculations.smooth_data(corrected_data, pressure)
+    averaged_pressures = main_calculations.average_pressures(pressure)
+    plot_vars = main_calculations.create_plot_vars(smoothened_data, 
+                                                   averaged_pressures)
+    main_calculations.plot_data(plot_vars)
 
 
 # Run main() if called from command line
