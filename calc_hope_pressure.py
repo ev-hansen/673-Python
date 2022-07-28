@@ -314,16 +314,21 @@ class HopeCalculations:
         # read ion related data, replace fill values in species data w/ NaN
         # data from Parigee and Burst are also replaced w/ NaNs
         # epoch type: dt.datetime
-        # data type: numpy.array[numpy.array[float]]
-        # mode type: numpy.array[int]
-        # fpdu, fhedu, fodu type: numpy.array[numpy.array[float]]
+        # data type: XarrDataset[XarrDataset[float]]
+        # mode type: XarrDataset[int]
+        # fpdu, fhedu, fodu type: XarrDataset[XarrDataset[float]]
 
         ion_data_list = [
             {'epoch': 
                 dt.datetime.fromtimestamp(float(
                     given_datasets[i]['Epoch_Ion'].squeeze()[j].values)),
                 'energy': 
-                    given_datasets[i]['HOPE_ENERGY_Ion'][j],
+                    given_datasets[i]['HOPE_ENERGY_Ion']
+                    .where(low_energy[0] <= 
+                           given_datasets[i]['HOPE_ENERGY_Ion']
+                           .HOPE_ENERGY_Ion_dim).where(
+                               given_datasets[i]['HOPE_ENERGY_Ion']
+                               .HOPE_ENERGY_Ion_dim <= up_energy[0])[j],
                 'fpdu': 
                     given_datasets[i]['FPDU'][j],
                 'daty_avg_int_H1': 
@@ -348,8 +353,13 @@ class HopeCalculations:
             {'epoch':
                 dt.datetime.fromtimestamp(float(
                     given_datasets[i]['Epoch_Ele'].squeeze()[j].values)),
-             'energy':
-                 given_datasets[i]['HOPE_ENERGY_Ele'][j],
+             'energy': 
+                 given_datasets[i]['HOPE_ENERGY_Ele']
+                 .where(low_energy[1] <= 
+                        given_datasets[i]['HOPE_ENERGY_Ele']
+                        .HOPE_ENERGY_Ele_dim).where(
+                            given_datasets[i]['HOPE_ENERGY_Ele']
+                            .HOPE_ENERGY_Ele_dim <= up_energy[0])[j],
              'fedu': 
                  given_datasets[i]['FEDU'][j]
              } for i in tqdm(
