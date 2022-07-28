@@ -32,7 +32,6 @@ __version__ = "0.0.1"
 
 
 ############################################################
-# TODO: - Filter out values outside low and up energy
 # TODO: - Correct fluxes
 # TODO: - Calculate Pressure
 # TODO: - Smooth data

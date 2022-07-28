@@ -14,7 +14,6 @@ Python is required via a conda installation. My current conda environment uses p
 6) You can now run the Python code from this repo. Email ev.hansen@umbc.edu for assistance.
 
 # TODO (``calc_hope_pressure.py``)
-- Filter out values outside low and up energy
 - Correct fluxes
 - Calculate Pressure
 - Smooth data
