@@ -64,7 +64,7 @@ load_dotenv()
 import cdflib
 import xarray as xr
 from xarray.core.dataset import Dataset as XarrDataset
-from pyspedas.rbsp import hope
+from pyspedas.rbsp import hope, efw
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -120,9 +120,6 @@ class HopeCalculations:
         self.__time_e_str = given_time_e_str
         self.__time_range = [given_time_s_str, given_time_e_str]
         self.__probe = given_probe
-        self.__datatype = "pitchangle"
-        self.__instrument = "ect" 
-        self.__component = "hope"
         self.__level = given_level
         self.__relat = given_relat
         datetimes = self.init_datetime_objects(
@@ -196,18 +193,25 @@ class HopeCalculations:
             Returns:
                 cdf_obj_list c(list): cdf file objects in a list
         """
-        cdf_obj_list = []
+        hope_cdf_obj_list = []
+        efw_cdf_obj_list = []
         for date_obj_i in tqdm(given_datetime_list, desc="Getting files"):
             now = dt.datetime.now()
             current_time = now.strftime("%H:%M:%S")
-            print(f"{current_time} getting file for {date_obj_i}")
-            cdf_obj_i = self.get_cdf(date_obj_i)
-            cdf_obj_list.append(cdf_obj_i)
-        return cdf_obj_list
+            print(f"{current_time} getting files for {date_obj_i}")
+            hope_cdf_obj_i, efw_cdf_obj_i = self.get_cdfs(date_obj_i)
+            hope_cdf_obj_list.append(hope_cdf_obj_i)
+            efw_cdf_obj_list.append(efw_cdf_obj_i)
+        return hope_cdf_obj_list, efw_cdf_obj_list
 
-    def get_cdf(self, given_datetime_obj: dt.datetime) -> XarrDataset:
+    def get_cdfs(self, given_datetime_obj: dt.datetime):
+        hope_cdf = self.get_hope_cdf(given_datetime_obj)
+        efw_cdf = self.get_efw_cdf(given_datetime_obj)
+        return hope_cdf, efw_cdf
+
+    def get_hope_cdf(self, given_datetime_obj: dt.datetime) -> XarrDataset:
         """
-        Gets cdf file object, either from disk or the internet.
+        Gets hope cdf file object, either from disk or the internet.
 
             Parameters:
                 given_datetime_obj (datetime object): datetime object
@@ -215,17 +219,14 @@ class HopeCalculations:
             Returns:
                 cdf_obj (cdf object): cdf file object
         """
-        probe = self.__probe
-        datatype = self.__datatype
 
-        if (datatype == "moments"):
-            datatype_abbr = "mom"
-        elif (datatype == "pitchangle"):
-            datatype_abbr = "pa"
+        probe = self.__probe
+        datatype = "pitchangle"
+        datatype_abbr = "pa"
 
         rel = "rel04"
-        instrument = self.__instrument
-        component = self.__component
+        instrument = "ect"
+        component = "hope"
         level = self.__level
 
         yr_str = given_datetime_obj.strftime("%Y")  # year
@@ -237,42 +238,104 @@ class HopeCalculations:
         ymd_str = yr_str + m_str + d_str
 
         # example: rbspa_rel04_ect-hope-mom-l3_20140317_v7.1.0
-        nm_hd = (f"rbsp{probe}_{rel}_{instrument}-{component}-"
-                 f"{datatype_abbr}-{level}_")
-        fln_tmp = f"{nm_hd}{ymd_str}_"
+        hope_nm_hd = (f"rbsp{probe}_{rel}_{instrument}-{component}-"
+                      f"{datatype_abbr}-{level}_")
+        hope_fln_tmp = f"{hope_nm_hd}{ymd_str}_"
 
-        cdf_file_dir = (f"{HOME_DIR}/rbsp_data/rbsp{probe}/{level}/"
-                        f"{instrument}/{component}/pitchangle/"
-                        f"{rel}/{yr_str}")
+        hope_cdf_file_dir = (f"{HOME_DIR}/rbsp_data/rbsp{probe}/{level}/"
+                             f"{instrument}/{component}/pitchangle/"
+                             f"{rel}/{yr_str}")
 
-        # Check of cdf file exists
-        error = 0
-
+        # Check if hope cdf file exists
+        hope_error = 0
         try:
             # search for file directory
-            file_list = os.listdir(cdf_file_dir)
+            file_list = os.listdir(hope_cdf_file_dir)
             try:
                 # Search for file in dir
-                str_match = list(filter(lambda x: fln_tmp in x, file_list))
-                cdf_file_path = f"{cdf_file_dir}/{str_match[0]}"
+                str_match = list(filter(lambda x: hope_fln_tmp in x, 
+                                        file_list))
+                cdf_file_path = f"{hope_cdf_file_dir}/{str_match[0]}"
             except IndexError:
-                print(f"Could not find {fln_tmp} in directory {cdf_file_dir}")
-                error += 1
+                print(f"Could not find {hope_fln_tmp} in directory "
+                      f"{hope_cdf_file_dir}")
+                hope_error += 1
         except FileNotFoundError:
-            print(f"Could not find directory {cdf_file_dir}")
-            error += 2
+            print(f"Could not find directory {hope_cdf_file_dir}")
+            hope_error += 2
 
-        if (error > 0):
-            print(f"Attempting to download {fln_tmp}")
+        if (hope_error > 0):
+            print(f"Attempting to download {hope_fln_tmp}")
             hope(trange=[f"{yr_str}-{m_str}-{d_str}", 
                          f"{yr_str}-{m_str}-{d_str}"], probe=probe,
                  datatype=datatype, downloadonly=True)  
-            file_list = os.listdir(cdf_file_dir)
-            str_match = list(filter(lambda x: fln_tmp in x, file_list))
-            cdf_file_path = f"{cdf_file_dir}/{str_match[0]}"
+            file_list = os.listdir(hope_cdf_file_dir)
+            str_match = list(filter(lambda x: hope_fln_tmp in x, file_list))
+            cdf_file_path = f"{hope_cdf_file_dir}/{str_match[0]}"
 
         dataset = cdflib.cdf_to_xarray(cdf_file_path, to_unixtime=True, 
                                        fillval_to_nan=True)
+        return dataset
+
+    def get_efw_cdf(self, given_datetime_obj: dt.datetime):
+        """
+        Gets hope cdf file object, either from disk or the internet.
+
+            Parameters:
+                given_datetime_obj (datetime object): datetime object
+
+            Returns:
+                cdf_obj (cdf object): cdf file object
+        """
+
+        probe = self.__probe
+
+        rel = "rel04"
+        instrument = "efw"
+        level = self.__level
+
+        yr_str = given_datetime_obj.strftime("%Y")  # year
+        m_str = given_datetime_obj.strftime("%m")   # month
+        d_str = given_datetime_obj.strftime("%d")   # day
+
+        # given_datetime_obj.strftime("%Y%m%d") probably could have been done 
+        # but Evan wanted to mirror some formatting from the IDL version
+        ymd_str = yr_str + m_str + d_str
+
+        # example: rbspa_rel04_ect-hope-mom-l3_20140317_v7.1.0
+        efw_fln_tmp = f"rbsp{probe}_{instrument}-{level}_{ymd_str}_"
+
+        efw_cdf_file_dir = (f"{HOME_DIR}/rbsp_data/rbsp{probe}/{level}/"
+                            f"{instrument}/{yr_str}/")
+
+        # Check if hope cdf file exists
+        efw_error = 0
+        try:
+            # search for file directory
+            file_list = os.listdir(efw_cdf_file_dir)
+            try:
+                # Search for file in dir
+                str_match = list(filter(lambda x: efw_fln_tmp in x, 
+                                        file_list))
+                efw_cdf_file_path = f"{efw_cdf_file_dir}/{str_match[0]}"
+            except IndexError:
+                print(f"Could not find {efw_fln_tmp} in directory "
+                      f"{efw_cdf_file_dir}")
+                efw_error += 1
+        except FileNotFoundError:
+            print(f"Could not find directory {efw_cdf_file_dir}")
+            efw_error += 2
+
+        if (efw_error > 0):
+            print(f"Attempting to download {efw_fln_tmp}")
+            efw(trange=[f"{yr_str}-{m_str}-{d_str}", 
+                        f"{yr_str}-{m_str}-{d_str}"], probe=probe,
+                downloadonly=True)  
+            file_list = os.listdir(efw_cdf_file_dir)
+            str_match = list(filter(lambda x: efw_fln_tmp in x, file_list))
+            efw_cdf_file_path = f"{efw_cdf_file_dir}/{str_match[0]}"
+
+        dataset = cdflib.CDF(efw_cdf_file_path)
         return dataset
 
     def read_cdf_data(self, 
@@ -550,8 +613,8 @@ def main():
                                          pot_corr, relat, swindow)
 
     datetime_list = main_calculations.datetime_range_list()
-    cdf_objs = main_calculations.get_cdf_objs(datetime_list)
-    cdf_objs_data = main_calculations.read_cdf_data(cdf_objs)
+    hope_cdf_objs, efw_cdf_objs = main_calculations.get_cdf_objs(datetime_list)
+    cdf_objs_data = main_calculations.read_cdf_data(hope_cdf_objs)
 
     corrected_data = main_calculations.correct_fluxes(cdf_objs_data)
     pressure = main_calculations.calc_pressure(corrected_data)

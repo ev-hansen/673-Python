@@ -205,8 +205,8 @@ def main():
                                          level, factor, low_energy, up_energy, 
                                          pot_corr, relat, swindow)
     datetime_list = main_calculations.datetime_range_list()
-    cdf_objs = main_calculations.get_cdf_objs(datetime_list)
-    cdf_objs_data = main_calculations.read_cdf_data(cdf_objs)
+    hope_cdf_objs, efw_cdf_objs = main_calculations.get_cdf_objs(datetime_list)
+    cdf_objs_data = main_calculations.read_cdf_data(hope_cdf_objs)
     plot_data(cdf_objs_data)
 
 
