@@ -14,12 +14,14 @@ Python is required via a conda installation. My current conda environment uses p
 6) You can now run the Python code from this repo. Email ev.hansen@umbc.edu for assistance.
 
 # TODO (``calc_hope_pressure.py``)
-- Correct fluxes
-- Calculate Pressure
+- Correct fluxes (skip for now)
+- **Calculate Pressure**
+- Pitchangle avg flux
+- **Calculate mean energy**
 - Smooth data
 - Replace 0s w/ NANs
-- Average Pressures
-- Create plot data
+- **Average Pressures**
+- **Create plot data**
 - Restructure class to be compatable with other 
   data operations, maybe multiple files?
 - Rename class

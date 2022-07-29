@@ -32,12 +32,14 @@ __version__ = "0.0.1"
 
 
 ############################################################
-# TODO: - Correct fluxes
-# TODO: - Calculate Pressure
+# TODO: - Correct fluxes (skip for now)
+# TODO: - *Calculate Pressure*
+# TODO: - Pitchangle avg flux
+# TODO: - *Calculate mean energy*
 # TODO: - Smooth data
 # TODO: - Replace 0s w/ NANs
-# TODO: - Average Pressures
-# TODO: - Create plot data
+# TODO: - *Average Pressures*
+# TODO: - *Create plot data*
 # TODO: - Restructure class to be compatable with other 
 #         data operations, maybe multiple files?
 # TODO: - Rename class
