@@ -31,7 +31,7 @@ __status__ = "Development"
 __version__ = "0.0.1"
 
 
-############################################################
+###############################################################################
 # TODO: - Correct fluxes (skip for now)
 # TODO: - *Calculate Pressure*
 # TODO: - Pitchangle avg flux
@@ -40,10 +40,12 @@ __version__ = "0.0.1"
 # TODO: - Replace 0s w/ NANs
 # TODO: - *Average Pressures*
 # TODO: - *Create plot data*
+# TODO: - Change CDF dict data object to an Xarray for easier
+#         operations
 # TODO: - Restructure class to be compatable with other 
 #         data operations, maybe multiple files?
 # TODO: - Rename class
-############################################################
+###############################################################################
 
 
 # Standard Imports #
@@ -454,6 +456,16 @@ class HopeCalculations:
                                             data, possibly spanning multiple 
                                             days
         """
+        c = 2.9979e10  # Speed of light, cm/s
+
+        # Mass, grams
+        mass_ele = 9.11e-28
+        mass_pro = 1.67e-24
+        mass_hel = 4 * mass_pro
+        mass_oxy = 16 * mass_pro
+
+        # Energy
+        ev_to_erg = 1.60219e-12  # erg/eV
 
         print()
 
