@@ -11,7 +11,7 @@ Python is required via a conda installation. My current conda environment uses p
 3) Run ``pip install pyspedas python-dotenv tqdm cdflib``. The Conda site suggest adding ``--upgrade-strategy only-if-needed`` to pip install commands, I'm not sure how essential that is.
 4) After that installs, create a file called ``.env`` in the same directory as the files from this repo.
 5) In the ``.env`` file,  add a line that is your OS type in all caps (e.g. MAC, WINDOWS, or LINUX), followed by ``_HOME_DIR = `` then the path to the folder of the files from this repo.
-6) Some of the test code requires spacepy's pycdf. You need to follow instructions on https://spacepy.github.io/pycdf.html to install on your machine, there are some platform-dependent there.
+6) Some of the test code requires spacepy's ``pycdf``. You need to follow instructions on https://spacepy.github.io/pycdf.html to install on your machine, there are some platform-dependent there.
 7) You can now run the Python code from this repo. Email ev.hansen@umbc.edu for assistance.
 
 # TODO (``calc_hope_pressure.py``)
