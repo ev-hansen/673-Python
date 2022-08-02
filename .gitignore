@@ -4,8 +4,8 @@
 # misc 
 rbsp_data/
 pysatCDF/
-test*code/
 .vscode/
 **/.DS_Store
 figout*
 __pycache__
+rbsp_cimi_ccmc.py
