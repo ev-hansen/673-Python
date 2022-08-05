@@ -349,10 +349,10 @@ class HopeCalculations:
 
             Returns:
                 cdf_data (dict): A dict w/ CDF data
-                    ion_data_array (numpy.arry): An array w/ epoch, ion data, 
-                        mode, fpdu, fhedu, and fodu values from the given CDF
-                        file
-                    ele_data_array (numpy.array): An array w/ epoch, 
+                    ion_data_array (List[Dict]): A list of Dicts w/ epoch, ion 
+                        data, mode, fpdu, fhedu, and fodu values from the given
+                        CDF file
+                    ele_data_array (List[Dict]): A list of Dicts w/ epoch, 
                         electron data, mode, and fedu values from the given CDF 
                         file.
 
@@ -364,6 +364,8 @@ class HopeCalculations:
         factor = self.__factor
         low_energy = self.__low_energy
         up_energy = self.__up_energy
+
+        pi = 3.141592653589793
 
         # Datetime objs represening timestamps
         # 
@@ -407,8 +409,7 @@ class HopeCalculations:
                     given_datasets[i]['FODU'][j],
                 'daty_avg_int_O1': 
                     given_datasets[i]['FODU'][j].transpose() * factor
-             } for i in tqdm(
-                 range(len(given_datasets)), desc="cdf ion")
+             } for i in range(len(given_datasets))
             for j in tqdm(range(given_datasets[i]['Epoch_Ion'].size), 
                           desc=f"Ion data #{i+1}") 
             if ((start_time <= dt.datetime.fromtimestamp(float(
@@ -428,19 +429,20 @@ class HopeCalculations:
                             .HOPE_ENERGY_Ele_dim <= up_energy[0])[j],
              'fedu': 
                  given_datasets[i]['FEDU'][j]
-             } for i in tqdm(
-                 range(len(given_datasets)), desc="cdf ele") 
+             } for i in range(len(given_datasets))
             for j in tqdm(range(given_datasets[i]['Epoch_Ele'].size),
                           desc=f"Ele data #{i+1}") 
             if ((start_time <= dt.datetime.fromtimestamp(float(
                 given_datasets[i]['Epoch_Ele'].values[j])) <= end_time) and
                 (given_datasets[i]['Mode_Ele'][j].values == apogee_mode))]
 
-        cdf_data = {"ion_data_list": ion_data_list, 
-                    "ele_data_list": ele_data_list,
-                    "pitchangle_data": [given_datasets[i]['PITCH_ANGLE'] 
-                                        for i in tqdm(
-                                            range(len(given_datasets)))]}
+        cdf_data = {"ion_data_list": 
+                    ion_data_list, 
+                    "ele_data_list": 
+                        ele_data_list,
+                    "pitchangle_data": 
+                        [given_datasets[i]['PITCH_ANGLE'] * (pi / 180)
+                         for i in tqdm(range(len(given_datasets)))]}
 
         return cdf_data
 
@@ -449,13 +451,16 @@ class HopeCalculations:
 
     def calc_pressure(self, cdf_data: List[Dict[str, 
                                                 Any]]) -> List[Dict[str, Any]]:
-        """Perform the calculations
+        """Perform the calculations, mostly cgs but also ergs
 
         Args:
             cdf_data (List[Dict[str, Any]]): List storing relevant CDF file 
                                             data, possibly spanning multiple 
                                             days
         """
+        ion_data = cdf_data['ion_data_list']
+        ele_data = cdf_data['ele_data_list']
+
         c = 2.9979e10  # Speed of light, cm/s
 
         # Mass, grams
@@ -466,6 +471,57 @@ class HopeCalculations:
 
         # Energy
         ev_to_erg = 1.60219e-12  # erg/eV
+
+        en_ion_erg = [ion_data[i]['energy'] * ev_to_erg 
+                      for i in tqdm(range(len(cdf_data['ion_data_list'])),
+                                    desc='ion ev to erg')]
+        en_ele_erg = [ele_data[i]['energy'] * ev_to_erg 
+                      for i in tqdm(range(len(cdf_data['ele_data_list'])),
+                                    desc='ele ev to erg')]
+
+        en_ion_kev = [[ion_data[i]['energy'][j] / 1e3 
+                       for j in range(len(ion_data[i]['energy']))]
+                      for i in tqdm(range(len(ion_data)), desc='ion to keV')]
+        en_ele_kev = [[ele_data[i]['energy'][j] / 1e3
+                       for j in range(len(ele_data[i]['energy']))]
+                      for i in tqdm(range(len(ele_data)), desc='ele to keV')]
+        # need to speed up this section but might have to work on that list 
+        # comprehension
+        # 8:29
+        # why is this faster than the list compr. below? Even if by a few secs.
+        del_ion_en = [[float('NaN')] * 72] * len(ion_data)
+
+        for it in tqdm(range(len(ion_data)), desc='del_ion'):
+            for ie in range(70):
+                del_ion_en[it][ie + 1] = [(en_ion_kev[it][ie + 1] - 
+                                           en_ion_kev[it][ie - 1]) / 2]
+            del_ion_en[it][0] = en_ion_kev[it][1] - en_ion_kev[it][0]
+            del_ion_en[it][71] = en_ion_kev[it][71] - en_ion_kev[it][70]
+
+        # 8:45
+        """del_ion_en = [(en_ion_kev[it][1] - en_ion_kev[it][0] if ie == 0 else 
+                      en_ion_kev[it][71] - en_ion_kev[it][70] if ie == 71 else 
+                      en_ion_kev[it][ie] - en_ion_kev[it][ie - 1] / 2)
+                      for it in tqdm(range(len(ion_data)), desc='del_ion') 
+                      for ie in range(72)]"""
+
+        del_ele_en = [[float('NaN')] * 72] * len(ele_data)
+
+        for it in tqdm(range(len(ele_data)), desc='del_ele'):
+            for ie in range(70):
+                del_ele_en[it][ie + 1] = (en_ele_kev[it][ie + 1] - 
+                                          en_ele_kev[it][ie - 1]) / 2
+            del_ele_en[it][0] = en_ele_kev[it][1] - en_ele_kev[it][0]
+            del_ele_en[it][71] = en_ele_kev[it][71] - en_ele_kev[it][70]
+
+        gam_pro = [1 + en_ion_erg[i] / (mass_pro * (c * c))
+                   for i in tqdm(range(len(en_ion_erg)), desc='gam_pro')]
+        gam_hel = [1 + en_ion_erg[i] / (mass_hel * (c * c))
+                   for i in tqdm(range(len(en_ion_erg)), desc='gam_hel')]
+        gam_oxy = [1 + en_ion_erg[i] / (mass_oxy * (c * c))
+                   for i in tqdm(range(len(en_ion_erg)), desc='gam_oxy')]
+        gam_ele = [1 + en_ele_erg[i] / (mass_ele * (c * c))
+                   for i in tqdm(range(len(en_ele_erg)), desc='gam_ele')]
 
         print()
 
@@ -628,13 +684,8 @@ def main():
     hope_cdf_objs, efw_cdf_objs = main_calculations.get_cdf_objs(datetime_list)
     cdf_objs_data = main_calculations.read_cdf_data(hope_cdf_objs)
 
-    corrected_data = main_calculations.correct_fluxes(cdf_objs_data)
-    pressure = main_calculations.calc_pressure(corrected_data)
-    smoothened_data = main_calculations.smooth_data(corrected_data, pressure)
-    averaged_pressures = main_calculations.average_pressures(pressure)
-    plot_vars = main_calculations.create_plot_vars(smoothened_data, 
-                                                   averaged_pressures)
-    main_calculations.plot_data(plot_vars)
+    # corrected_data = main_calculations.correct_fluxes(cdf_objs_data)
+    pressure = main_calculations.calc_pressure(cdf_objs_data)
 
 
 # Run main() if called from command line
