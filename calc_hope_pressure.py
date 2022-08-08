@@ -29,6 +29,7 @@ __credits__ = [["Evan Hansen", "Python code"],
 __date__ = "2022/06/08 - 2022/08/12"
 __status__ = "Development"
 __version__ = "0.0.1"
+__license__ = "MIT"
 
 
 ###############################################################################
@@ -442,7 +443,8 @@ class HopeCalculations:
                         ele_data_list,
                     "pitchangle_data": 
                         [given_datasets[i]['PITCH_ANGLE'] * (pi / 180)
-                         for i in tqdm(range(len(given_datasets)))]}
+                         for i in tqdm(range(len(given_datasets)), 
+                                       desc='pitchangle')]}
 
         return cdf_data
 
@@ -460,6 +462,7 @@ class HopeCalculations:
         """
         ion_data = cdf_data['ion_data_list']
         ele_data = cdf_data['ele_data_list']
+        pa_arr = cdf_data['pitchangle_data']
 
         c = 2.9979e10  # Speed of light, cm/s
 
@@ -522,6 +525,14 @@ class HopeCalculations:
                    for i in tqdm(range(len(en_ion_erg)), desc='gam_oxy')]
         gam_ele = [1 + en_ele_erg[i] / (mass_ele * (c * c))
                    for i in tqdm(range(len(en_ele_erg)), desc='gam_ele')]
+
+        npa = len(pa_arr)
+        del_pa = [pa_arr[1] - pa_arr[0] if ii == 0 else 
+                  pa_arr[npa - 1] - pa_arr[npa - 2] if ii == npa - 1 else
+                  (pa_arr[ii + 1] - pa_arr[ii - 1]) / 2.0 
+                  for ii in tqdm(range(1, npa), desc='del_pa')]
+
+        
 
         print()
 
