@@ -3,7 +3,7 @@ This repo exists to host code that is being moved from IDL to Python. For the mo
 
 Cristian's IDL code (``calc_hope_pressure.pro``) uses formulas from [this paper](https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2019JA026695) to calculate pressure of ion species (H+, He+, O+).
 
-My internship ends 2022/08/12 so code may not be fully implemented or maintained after then.
+My internship ends 2022/08/12 so code may not be fully implemented or maintained after then. Feel free to make issues or pull requests.
 
 
 # Requirements
