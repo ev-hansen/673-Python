@@ -26,13 +26,13 @@ Python is required via a conda installation. My current conda environment uses p
 
 # TODO (``calc_hope_pressure.py``)
 - Correct fluxes (skip for now)
-- *Calculate Pressure*
+- **Calculate Pressure**
 - Pitchangle avg flux
-- *Calculate mean energy*
+- **Calculate mean energy**
 - Smooth data
 - Replace 0s w/ NANs
-- *Average Pressures*
-- *Create plot data*
+- **Average Pressures**
+- **Create plot data**
 - Change CDF dict data object to an Xarray for easier operations
 - Restructure class to be compatable with other data operations, maybe saparate into multiple files?
 - Move functions that dont need object access out of the HopeCalculations class
