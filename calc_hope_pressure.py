@@ -598,8 +598,6 @@ class HopeCalculations:
 
         for it in tqdm(range(c_ion_time)):
             if relat == 0:
-                print(h_perp[it].dims)
-                print(del_ion_en[it].dims)
                 temp_h_perp = (numpy.sqrt(
                     2 * mass_pro * en_ion_erg[it]) * (
                         h_perp[it] * del_ion_en[it]))
