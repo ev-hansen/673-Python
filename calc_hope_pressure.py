@@ -56,6 +56,8 @@ import argparse
 import os
 import platform
 from typing import List, Dict, Tuple, Any
+import contextlib
+import math
 
 
 # Third-Party Inports #
@@ -444,9 +446,7 @@ class HopeCalculations:
                     "ele_data_list": 
                         ele_data_list,
                     "pitchangle_data": 
-                        [given_datasets[i]['PITCH_ANGLE'] * (pi / 180)
-                         for i in tqdm(range(len(given_datasets)), 
-                                       desc='pitchangle')]}
+                        given_datasets[0]['PITCH_ANGLE'] * (pi / 180)}
 
         return cdf_data
 
@@ -467,8 +467,10 @@ class HopeCalculations:
         c_ion_time = len(ion_data)
         c_ele_time = len(ele_data)
         pa_arr = cdf_data['pitchangle_data']
+        relat = self.__relat
 
         c = 2.9979e10  # Speed of light, cm/s
+        pi = 3.141592653589793
 
         # Mass, grams
         mass_ele = 9.11e-28
@@ -532,8 +534,6 @@ class HopeCalculations:
 
         npa = len(pa_arr)
 
-        print(pa_arr)
-        
         del_pa = [pa_arr[1] - pa_arr[0] if ii == 0 else 
                   pa_arr[npa - 1] - pa_arr[npa - 2] if ii == npa - 1 else
                   (pa_arr[ii + 1] - pa_arr[ii - 1]) / 2.0 
@@ -568,18 +568,65 @@ class HopeCalculations:
         ang_perp = 0.5 * (numpy.sin(pa_arr) ** 3)
         ang_para = numpy.sin(pa_arr) * (numpy.cos(pa_arr) ** 2)
 
-        for it in tqdm(range(c_ion_time), desc='perp and para'):
+        # ion perp and para
+        for it in tqdm(range(c_ion_time), desc='ele - perp and para'):
             temp_h = ion_data[it]['daty_avg_int_H1']
             temp_he = ion_data[it]['daty_avg_int_He1']
             temp_o = ion_data[it]['daty_avg_int_O1']
 
             for ie in range(len(ion_data[it]['daty_avg_int_H1'])):
-                h_perp[it][ie] = temp_h[ie] * ang_perp * del_pa
-                h_para[it][ie] = temp_h[ie] * ang_para * del_pa
-                he_perp[it][ie] = temp_he[ie] * ang_perp * del_pa
-                he_para[it][ie] = temp_he[ie] * ang_para * del_pa
-                o_perp[it][ie] = temp_o[ie] * ang_perp * del_pa
-                o_para[it][ie] = temp_o[ie] * ang_para * del_pa
+                with contextlib.redirect_stdout(None):
+                    h_perp[it][ie] = ((temp_h[ie] * ang_perp * del_pa)
+                                      .sum(dim='PITCH_ANGLE', skipna=True)
+                                      )
+                    print(h_perp[it][ie])
+                    h_para[it][ie] = ((temp_h[ie] * ang_para * del_pa)
+                                      .sum(dim='PITCH_ANGLE', skipna=True)
+                                      )
+                    he_perp[it][ie] = ((temp_he[ie] * ang_perp * del_pa)
+                                       .sum(dim='PITCH_ANGLE', skipna=True)
+                                       )
+                    he_para[it][ie] = ((temp_he[ie] * ang_para * del_pa)
+                                       .sum(dim='PITCH_ANGLE', skipna=True)
+                                       )
+                    o_perp[it][ie] = ((temp_o[ie] * ang_perp * del_pa)
+                                      .sum(dim='PITCH_ANGLE', skipna=True)
+                                      )
+                    o_para[it][ie] = ((temp_o[ie] * ang_para * del_pa)
+                                      .sum(dim='PITCH_ANGLE', skipna=True)
+                                      )
+
+        for it in tqdm(range(c_ion_time)):
+            if relat == 0:
+                print(h_perp[it].dims)
+                print(del_ion_en[it].dims)
+                temp_h_perp = (numpy.sqrt(
+                    2 * mass_pro * en_ion_erg[it]) * (
+                        h_perp[it] * del_ion_en[it]))
+                print(temp_h_perp.dims)
+                temp_h_para = (numpy.sqrt(
+                    2 * mass_pro * en_ion_erg[it]) * (
+                        h_para[it] * del_ion_en[it]))
+                temp_he_perp = (numpy.sqrt(
+                    2 * mass_hel * en_ion_erg[it]) * (
+                        he_perp[it] * del_ion_en[it]))
+                temp_he_para = (numpy.sqrt(
+                    2 * mass_hel * en_ion_erg[it]) * (
+                        he_para[it] * del_ion_en[it]))
+                temp_o_perp = (numpy.sqrt(
+                    2 * mass_oxy * en_ion_erg[it]) * (
+                        o_perp[it] * del_ion_en[it]))
+                temp_o_para = (numpy.sqrt(
+                    2 * mass_oxy * en_ion_erg[it]) * (
+                        o_para[it] * del_ion_en[it]))
+
+                '''p_perp_h[it] = 2 * pi * temp_h_perp.sum(dim='', skipna=True)
+                p_para_h[it] = 2 * pi * temp_h_para.sum()
+                p_perp_he[it] = 2 * pi * temp_he_perp.sum()
+                p_para_he[it] = 2 * pi * temp_he_para.sum()
+                p_perp_o[it] = 2 * pi * temp_o_perp.sum()
+                p_para_o[it] = 2 * pi * temp_o_para.sum()
+            elif relat == 1:'''
 
         print()
 
