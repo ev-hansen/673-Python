@@ -20,7 +20,7 @@ Python is required via a conda installation. My current conda environment uses p
 # Running code from the ``test code`` folder
 1) Some of the test code requires spacepy's ``pycdf``. You need to follow instructions [from spacepy's website](https://spacepy.github.io/) to install on your machine, as there are some platform-specific instructions for the ``spacepy`` package. Also see [this page](https://spacepy.github.io/pycdf.html) when configuring ``pycdf``.
 2) Copy the ``.env`` file from the project's parent directory, but replace the word ``HOME`` with ``TEST`` and make sure all the paths are for the ``test code`` folder instead of the parent.
-3) You will need to include the ``CDF_LIB`` path in the ``.env`` file in the ``test code`` directory. To do this, add a line that is your OS type in all caps (e.g. MAC, WINDOWS, or LINUX), followed by ``_CDF_LIB = `` then the path to your local CDF installation from step 1.
+3) You will need to include the ``CDF_LIB`` path in the ``.env`` file in the ``test code`` directory. To do this, add a line that is your OS type in all caps (e.g. ``MAC``, ``WINDOWS``, or ``LINUX``), followed by ``_CDF_LIB = `` then the path to your local CDF installation from step 1.
 4) When using the test code, make sure to ``cd`` into that directory instead of running from the parent directory, as the parent directory has a different ``.env`` file
 5) Some test code may have additional packages installed. I suggest checking the imports and installing missing packages via pip before running code in that directory.
 
