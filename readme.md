@@ -11,7 +11,7 @@ Python is required via a conda installation. My current conda environment uses p
 
 # Setting up Conda and the .env file
 1) Install conda (I suggest miniconda, but anaconda might be better depending on the system)
-2) Create a new conda environment, or install everything into the ``base`` environment if you're only using it for this. Regardless, install numpy in a conda environment with ``conda install numpy``. 
+2) Create a new conda environment ([see this link](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)), or install everything into the ``base`` environment if you're only using it for this (not reccomended, but it's what I did). Regardless, install numpy in a conda environment with ``conda install numpy``. 
 3) Run ``pip install pyspedas python-dotenv tqdm cdflib``. The Conda site suggest adding ``--upgrade-strategy only-if-needed`` to pip install commands, I'm not sure how essential that is.
 4) After that installs, create a file called ``.env`` in the same directory as the files from this repo.
 5) In the ``.env`` file,  add a line that is your OS type in all caps (e.g. ``MAC``, ``WINDOWS``, or ``LINUX``), followed by ``_HOME_DIR = `` then the path to the folder of the files from this repo.
