@@ -72,6 +72,8 @@ from pyspedas.rbsp import hope, efw
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
+import numpy
+
 from tqdm import tqdm
 
 # matplotlib settings, feel free to change
@@ -462,6 +464,8 @@ class HopeCalculations:
         """
         ion_data = cdf_data['ion_data_list']
         ele_data = cdf_data['ele_data_list']
+        c_ion_time = len(ion_data)
+        c_ele_time = len(ele_data)
         pa_arr = cdf_data['pitchangle_data']
 
         c = 2.9979e10  # Speed of light, cm/s
@@ -484,17 +488,17 @@ class HopeCalculations:
 
         en_ion_kev = [[ion_data[i]['energy'][j] / 1e3 
                        for j in range(len(ion_data[i]['energy']))]
-                      for i in tqdm(range(len(ion_data)), desc='ion to keV')]
+                      for i in tqdm(range(c_ion_time), desc='ion to keV')]
         en_ele_kev = [[ele_data[i]['energy'][j] / 1e3
                        for j in range(len(ele_data[i]['energy']))]
-                      for i in tqdm(range(len(ele_data)), desc='ele to keV')]
+                      for i in tqdm(range(c_ele_time), desc='ele to keV')]
         # need to speed up this section but might have to work on that list 
         # comprehension
         # 8:29
         # why is this faster than the list compr. below? Even if by a few secs.
-        del_ion_en = [[float('NaN')] * 72] * len(ion_data)
+        del_ion_en = [[float('NaN')] * 72] * c_ion_time
 
-        for it in tqdm(range(len(ion_data)), desc='del_ion'):
+        for it in tqdm(range(c_ion_time), desc='del_ion'):
             for ie in range(70):
                 del_ion_en[it][ie + 1] = [(en_ion_kev[it][ie + 1] - 
                                            en_ion_kev[it][ie - 1]) / 2]
@@ -508,9 +512,9 @@ class HopeCalculations:
                       for it in tqdm(range(len(ion_data)), desc='del_ion') 
                       for ie in range(72)]"""
 
-        del_ele_en = [[float('NaN')] * 72] * len(ele_data)
+        del_ele_en = [[float('NaN')] * 72] * c_ele_time
 
-        for it in tqdm(range(len(ele_data)), desc='del_ele'):
+        for it in tqdm(range(c_ele_time), desc='del_ele'):
             for ie in range(70):
                 del_ele_en[it][ie + 1] = (en_ele_kev[it][ie + 1] - 
                                           en_ele_kev[it][ie - 1]) / 2
@@ -527,12 +531,55 @@ class HopeCalculations:
                    for i in tqdm(range(len(en_ele_erg)), desc='gam_ele')]
 
         npa = len(pa_arr)
+
+        print(pa_arr)
+        
         del_pa = [pa_arr[1] - pa_arr[0] if ii == 0 else 
                   pa_arr[npa - 1] - pa_arr[npa - 2] if ii == npa - 1 else
                   (pa_arr[ii + 1] - pa_arr[ii - 1]) / 2.0 
-                  for ii in tqdm(range(1, npa), desc='del_pa')]
+                  for ii in tqdm(range(0, npa), desc='del_pa')]
 
-        
+        h_perp = [
+            [float('NaN')] * len(ion_data[0]['daty_avg_int_H1'])] * c_ion_time
+        h_para = [
+            [float('NaN')] * len(ion_data[0]['daty_avg_int_H1'])] * c_ion_time
+        he_perp = [
+            [float('NaN')] * len(ion_data[0]['daty_avg_int_He1'])] * c_ion_time
+        he_para = [
+            [float('NaN')] * len(ion_data[0]['daty_avg_int_He1'])] * c_ion_time
+        o_perp = [
+            [float('NaN')] * len(ion_data[0]['daty_avg_int_O1'])] * c_ion_time
+        o_para = [
+            [float('NaN')] * len(ion_data[0]['daty_avg_int_O1'])] * c_ion_time
+        e_perp = [
+            [float('NaN')] * len(ele_data[0]['fedu'])] * c_ele_time
+        e_para = [
+            [float('NaN')] * len(ele_data[0]['fedu'])] * c_ele_time
+
+        p_perp_h = [float('NaN')] * c_ion_time
+        p_para_h = [float('NaN')] * c_ion_time
+        p_perp_he = [float('NaN')] * c_ion_time
+        p_para_he = [float('NaN')] * c_ion_time
+        p_perp_o = [float('NaN')] * c_ion_time
+        p_para_o = [float('NaN')] * c_ion_time
+        p_perp_e = [float('NaN')] * c_ele_time
+        p_para_e = [float('NaN')] * c_ele_time
+
+        ang_perp = 0.5 * (numpy.sin(pa_arr) ** 3)
+        ang_para = numpy.sin(pa_arr) * (numpy.cos(pa_arr) ** 2)
+
+        for it in tqdm(range(c_ion_time), desc='perp and para'):
+            temp_h = ion_data[it]['daty_avg_int_H1']
+            temp_he = ion_data[it]['daty_avg_int_He1']
+            temp_o = ion_data[it]['daty_avg_int_O1']
+
+            for ie in range(len(ion_data[it]['daty_avg_int_H1'])):
+                h_perp[it][ie] = temp_h[ie] * ang_perp * del_pa
+                h_para[it][ie] = temp_h[ie] * ang_para * del_pa
+                he_perp[it][ie] = temp_he[ie] * ang_perp * del_pa
+                he_para[it][ie] = temp_he[ie] * ang_para * del_pa
+                o_perp[it][ie] = temp_o[ie] * ang_perp * del_pa
+                o_para[it][ie] = temp_o[ie] * ang_para * del_pa
 
         print()
 
