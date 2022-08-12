@@ -3,11 +3,11 @@ This repo exists to host code that is being moved from IDL to Python. For the mo
 
 Cristian's IDL code (``calc_hope_pressure.pro``) uses formulas from [this paper](https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2019JA026695) to calculate pressure of ion species (H+, He+, O+).
 
-My internship ends 2022/08/12 so code may not be fully implemented or maintained after then. Feel free to make issues or pull requests.
+My internship ended 2022/08/12 and code is not fully implemented and may not be maintained in the future. Feel free to make issues and pull requests, please keep in mind the license. 
 
 
 # Requirements
-Python is required via a conda installation. My current conda environment uses python 3.9.12.
+Python is required, a conda installation is reccomended. My current conda environment uses python 3.9.12.
 
 # Setting up Conda and the .env file
 1) Install conda (I suggest miniconda, but anaconda might be better depending on the system)
@@ -26,14 +26,15 @@ Python is required via a conda installation. My current conda environment uses p
 
 # TODO (``calc_hope_pressure.py``)
 - Correct fluxes (skip for now)
-- **Calculate Pressure**
+- ***Calculate Pressure*** (``calc_pressure`` in ``HopeCalculations``)
 - Pitchangle avg flux
-- **Calculate mean energy**
+- ***Calculate mean energy***
 - Smooth data
 - Replace 0s w/ NANs
-- **Average Pressures**
-- **Create plot data**
-- Change CDF dict data object to an Xarray for easier operations
-- Restructure class to be compatable with other data operations, maybe saparate into multiple files?
-- Move functions that dont need object access out of the HopeCalculations class
-- Rename the HopeCalculations class
+- ***Average Pressures***
+- ***Create plot data***
+- Change CDF dict data object to an Xarray for easier
+  operations
+- Restructure class to be compatable with other 
+  data operations, maybe multiple files?
+- Rename class

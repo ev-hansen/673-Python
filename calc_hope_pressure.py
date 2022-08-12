@@ -34,7 +34,7 @@ __license__ = "MIT"
 
 ###############################################################################
 # TODO: - Correct fluxes (skip for now)
-# TODO: - *Calculate Pressure*
+# TODO: - *Calculate Pressure* (``calc_pressure`` in ``HopeCalculations``)
 # TODO: - Pitchangle avg flux
 # TODO: - *Calculate mean energy*
 # TODO: - Smooth data
@@ -451,11 +451,17 @@ class HopeCalculations:
         return cdf_data
 
     def correct_fluxes(self, given_cdf_data: List[Dict[str, Any]]):
+        """Not implemented yet
+
+        Args:
+            given_cdf_data (List[Dict[str, Any]]): _description_
+        """
         print()
 
     def calc_pressure(self, cdf_data: List[Dict[str, 
                                                 Any]]) -> List[Dict[str, Any]]:
         """Perform the calculations, mostly cgs but also ergs
+        Lines 406-576 from the IDL code
 
         Args:
             cdf_data (List[Dict[str, Any]]): List storing relevant CDF file 
@@ -629,15 +635,37 @@ class HopeCalculations:
         print()
 
     def smooth_data(self, given_corrected_data, given_pressure):
+        """Not implemented yet
+
+        Args:
+            given_corrected_data (_type_): _description_
+            given_pressure (_type_): _description_
+        """
         print()
 
     def average_pressures(self, given_pressure):
+        """Not implemented yet
+
+        Args:
+            given_pressure (_type_): _description_
+        """
         print()
 
     def create_plot_vars(self, given_smooth_data, given_avg_pressure):
+        """Not implemented yet
+
+        Args:
+            given_smooth_data (_type_): _description_
+            given_avg_pressure (_type_): _description_
+        """
         print()
 
     def plot_data(self, given_plot_vars):
+        """Not implemented yet
+
+        Args:
+            given_plot_vars (_type_): _description_
+        """
         print()
 
     # Getters, mostly for testing purposes
