@@ -57,7 +57,7 @@ import os
 import platform
 from typing import List, Dict, Tuple, Any
 import contextlib
-import math
+import math  # currently unused atm, but may be helpful
 
 
 # Third-Party Inports #
@@ -67,12 +67,12 @@ load_dotenv()
 
 # CDF Operations
 import cdflib
-import xarray as xr
+import xarray as xr  # currently unused atm, but may be helpful
 from xarray.core.dataset import Dataset as XarrDataset
 from pyspedas.rbsp import hope, efw
 
 import matplotlib as mpl
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt  # currently unused atm, but may be helpful
 
 import numpy
 
@@ -581,6 +581,7 @@ class HopeCalculations:
             temp_o = ion_data[it]['daty_avg_int_O1']
 
             for ie in range(len(ion_data[it]['daty_avg_int_H1'])):
+                # without the following line, the terminal output gets flooded
                 with contextlib.redirect_stdout(None):
                     h_perp[it][ie] = ((temp_h[ie] * ang_perp * del_pa)
                                       .sum(dim='PITCH_ANGLE', skipna=True)

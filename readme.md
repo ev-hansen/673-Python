@@ -3,7 +3,7 @@ This repo exists to host code that is being moved from IDL to Python. For the mo
 
 Cristian's IDL code (``calc_hope_pressure.pro``) uses formulas from [this paper](https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2019JA026695) to calculate pressure of ion species (H+, He+, O+).
 
-My internship ended 2022/08/12 and code is not fully implemented and may not be maintained in the future. Feel free to make issues and pull requests, please keep in mind the license. 
+My internship ended 2022/08/12 and code is not fully implemented and may not be maintained in the future. Feel free to make [issues](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues) and [pull requests](https://docs.github.com/en/pull-requests), please keep in mind the [license](https://opensource.org/licenses/MIT). 
 
 
 # Requirements
@@ -33,8 +33,15 @@ Python is required, a conda installation is reccomended. My current conda enviro
 - Replace 0s w/ NANs
 - ***Average Pressures***
 - ***Create plot data***
-- Change CDF dict data object to an Xarray for easier
-  operations
-- Restructure class to be compatable with other 
-  data operations, maybe multiple files?
+- Change CDF dict data object to an Xarray for easier operations
+- Restructure class to be compatable with other data operations, maybe multiple files?
 - Rename class
+
+# TODO (other)
+- Look at other plasma parameters (other calculations, density, mean energy)
+- Recreate loop (handler/wrapper)
+- Recreate binning
+- Plot data
+- Recreate dial plot (may be possible w/ matplotlib)
+- Plasma density plots?
+- Solar wind + curvature of magnetic field (?)
